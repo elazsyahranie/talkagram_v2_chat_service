@@ -19,7 +19,6 @@ import { RedisModule } from './redis.module';
 import { StaffsModule } from './staffs/staffs.module';
 import { StoresController } from './stores/stores.controller';
 import { StoresService } from './stores/stores.service';
-import { ChatModule } from './chat/chat.module';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
 // import { APP_FILTER } from '@nestjs/core';
 
@@ -29,7 +28,6 @@ import { ChatModule } from './chat/chat.module';
     DatabaseModule,
     EmployeesModule,
     CommonModule,
-    ChatModule,
     WinstonModule.forRoot(winstonConfig),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
