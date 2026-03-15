@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Inject,
-  NotFoundException,
-  HttpException,
-} from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 // import type { LoggerService } from '@nestjs/common';
 // import { UpdateUserDto } from './dto/update-user.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
