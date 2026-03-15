@@ -14,8 +14,6 @@ import { winstonConfig } from './logger/winston.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedisModule } from './redis.module';
-import { StoresController } from './stores/stores.controller';
-import { StoresService } from './stores/stores.service';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
 // import { APP_FILTER } from '@nestjs/core';
 
@@ -38,7 +36,7 @@ import { StoresService } from './stores/stores.service';
     AuthModule,
     RedisModule,
   ],
-  controllers: [AppController, StoresController],
+  controllers: [AppController],
   providers: [
     AppService,
     // { provide: APP_GUARD, useClass: ThrottlerGuard } Activates the throttle
@@ -50,7 +48,6 @@ import { StoresService } from './stores/stores.service';
     //   provide: APP_FILTER,
     //   useClass: GrpcsExceptionFilter,
     // },
-    StoresService,
   ],
   exports: [WinstonModule],
 })
