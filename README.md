@@ -117,6 +117,9 @@ To generate prisma client file, you can execute
 ### On migrations 
 You would only need to edit your `prisma.schema` file, and then enter `npx prisma generate` to generate
 
+### On seeder
+Since the app also use Prisma to execute data seeders, you would need to execute `npx prisma db seed` to run seeders
+
 ## Guards
 Guards look similar to middlewares, but there are differences. Guards:
 - Runs after routing
