@@ -38,6 +38,7 @@ export class ExceptionsFilter extends BaseExceptionFilter {
       statusCode: 500,
       timestamp: new Date().toISOString(),
       path: request.url,
+      // path: request ? request.url : '',
       response: '',
     };
 
@@ -65,7 +66,9 @@ export class ExceptionsFilter extends BaseExceptionFilter {
       myResponseObj.response = 'Internal Server Error';
     }
 
-    response.status(myResponseObj.statusCode).json(myResponseObj);
+    // console.dir(response, { depth: null });
+
+    // response.status(myResponseObj.statusCode).json(myResponseObj);
 
     this.logger.error(
       typeof myResponseObj.response === 'string'

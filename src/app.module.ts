@@ -12,8 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { CompaniesModule } from './companies/companies.module';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './logger/winston.config';
-import { ExceptionsFilter } from './common/exceptions.filter';
-import { APP_FILTER } from '@nestjs/core';
+// import { ExceptionsFilter } from './common/exceptions.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedisModule } from './redis.module';
@@ -21,6 +20,8 @@ import { StaffsModule } from './staffs/staffs.module';
 import { StoresController } from './stores/stores.controller';
 import { StoresService } from './stores/stores.service';
 import { ChatModule } from './chat/chat.module';
+// import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
+// import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -49,10 +50,14 @@ import { ChatModule } from './chat/chat.module';
   providers: [
     AppService,
     // { provide: APP_GUARD, useClass: ThrottlerGuard } Activates the throttle
-    {
-      provide: APP_FILTER,
-      useClass: ExceptionsFilter,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: ExceptionsFilter,
+    // },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: GrpcsExceptionFilter,
+    // },
     StoresService,
   ],
   exports: [WinstonModule],

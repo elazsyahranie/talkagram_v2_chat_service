@@ -1,5 +1,5 @@
 {
-  "name": "nest_js_basic",
+  "name": "talkagram_users_service",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -24,11 +24,13 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@grpc/grpc-js": "^1.14.3",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/mapped-types": "^2.1.0",
+    "@nestjs/microservices": "^11.1.16",
     "@nestjs/platform-express": "^11.1.9",
     "@nestjs/platform-socket.io": "^11.1.14",
     "@nestjs/serve-static": "^5.0.4",

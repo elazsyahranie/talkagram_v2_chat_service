@@ -22,6 +22,7 @@ import { deleteFileIfExists } from 'src/file-upload.util';
 import * as dotenv from 'dotenv';
 import Redis from 'ioredis';
 dotenv.config();
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UsersService {
@@ -36,8 +37,8 @@ export class UsersService {
 
   async create(
     requestBody: Prisma.UsersCreateInput,
-    profile?: Express.Multer.File,
-    header?: Express.Multer.File,
+    // profile?: Express.Multer.File,
+    // header?: Express.Multer.File,
   ) {
     let { first_name, middle_name, last_name } = requestBody;
     requestBody.name =
@@ -69,40 +70,52 @@ export class UsersService {
       ]);
 
     if (emailDuplicate != 0)
-      throw new HttpException('Email already used!', 409);
+      // throw new HttpException('Email already used!', 409);
+      throw new RpcException({
+        code: 10,
+        message: 'Email already used!',
+      });
     if (usernameDuplicate != 0)
-      throw new HttpException('Username already used!', 409);
+      // throw new HttpException('Username already used!', 409);
+      throw new RpcException({
+        code: 10,
+        message: 'Username already used!',
+      });
     if (phoneDuplicate != 0)
-      throw new HttpException('Phone already used!', 409);
+      // throw new HttpException('Phone already used!', 409);
+      throw new RpcException({
+        code: 10,
+        message: 'Phone already used!',
+      });
 
     const createUser = await this.databaseService.users.create({
       data: requestBody,
     });
 
-    if (profile) {
-      const imageDataBody: UserImageDto = {
-        filename: profile.filename,
-        path: profile.path.replace(/\\/g, '/'),
-        type: 'Profile',
-        user_id: user_id,
-      };
-      await this.databaseService.userImages.create({
-        data: { ...imageDataBody },
-      });
-    }
+    // if (profile) {
+    //   const imageDataBody: UserImageDto = {
+    //     filename: profile.filename,
+    //     path: profile.path.replace(/\\/g, '/'),
+    //     type: 'Profile',
+    //     user_id: user_id,
+    //   };
+    //   await this.databaseService.userImages.create({
+    //     data: { ...imageDataBody },
+    //   });
+    // }
 
-    if (header) {
-      const imageDataBody: UserImageDto = {
-        filename: header.filename,
-        path: header.path.replace(/\\/g, '/'),
-        type: 'Header',
-        user_id: user_id,
-      };
+    // if (header) {
+    //   const imageDataBody: UserImageDto = {
+    //     filename: header.filename,
+    //     path: header.path.replace(/\\/g, '/'),
+    //     type: 'Header',
+    //     user_id: user_id,
+    //   };
 
-      await this.databaseService.userImages.create({
-        data: { ...imageDataBody },
-      });
-    }
+    //   await this.databaseService.userImages.create({
+    //     data: { ...imageDataBody },
+    //   });
+    // }
 
     this.logger.log('User created!', 'UsersService');
 
@@ -128,7 +141,10 @@ export class UsersService {
       },
     });
     if (!findUser) {
-      throw new HttpException('No user found!', 404);
+      throw new RpcException({
+        code: 5,
+        message: 'No user found!',
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -136,7 +152,11 @@ export class UsersService {
       findUser.password,
     );
     if (!isPasswordValid) {
-      throw new HttpException('Password invalid!', 401);
+      // throw new RpcException('Password invalid!');
+      throw new RpcException({
+        code: 16,
+        message: 'Password invalid!',
+      });
     }
 
     const token = await this.jwtService.signAsync({
@@ -243,7 +263,11 @@ export class UsersService {
       // },
     });
     if (!result.length) {
-      throw new NotFoundException('Not found!');
+      // throw new NotFoundException('Not found!');
+      throw new RpcException({
+        code: 5,
+        message: 'Not found!',
+      });
     }
 
     const finalResult = result.map((obj) => {
@@ -306,7 +330,11 @@ export class UsersService {
       },
     });
     if (!data) {
-      throw new NotFoundException(404, 'User not found!');
+      // throw new NotFoundException(404, 'User not found!');
+      throw new RpcException({
+        code: 5,
+        message: 'User not found!',
+      });
     }
 
     const userImages = data.user_images.length
@@ -315,7 +343,7 @@ export class UsersService {
         })
       : [];
 
-    this.logger.log('One user fetched!', 'UsersService');
+    // this.logger.log('One user fetched!', 'UsersService');
 
     const finalData = { ...data, user_images: userImages };
 
@@ -332,8 +360,8 @@ export class UsersService {
   async update(
     id: string,
     user: Prisma.UsersUpdateInput,
-    profile?: Express.Multer.File,
-    header?: Express.Multer.File,
+    // profile?: Express.Multer.File,
+    // header?: Express.Multer.File,
   ) {
     // Send response if the form-data being sent is blank
     if (!user) {
@@ -346,7 +374,11 @@ export class UsersService {
       },
     });
     if (!findUser) {
-      throw new HttpException('User not found!', 404);
+      // throw new HttpException('User not found!', 404);
+      throw new RpcException({
+        code: 5,
+        message: 'No user found!',
+      });
     }
 
     // Selesaikan yang ini ya, buat agar bisa kosong semua
@@ -367,49 +399,49 @@ export class UsersService {
       data: user,
     });
 
-    if (profile) {
-      const imageDataBody: UserImageDto = {
-        filename: profile.filename,
-        path: profile.path.replace(/\\/g, '/'),
-        type: 'Profile',
-        user_id: id,
-      };
-      await this.databaseService.$transaction([
-        // 'delete' only accepts unique columns
-        // Or you can use 'composite unique key' (although we don't use it here)
-        this.databaseService.userImages.deleteMany({
-          where: {
-            user_id: id,
-            type: 'Profile',
-          },
-        }),
-        this.databaseService.userImages.create({
-          data: { ...imageDataBody },
-        }),
-      ]);
-    }
-    if (header) {
-      const imageDataBody: UserImageDto = {
-        filename: header.filename,
-        path: header.path.replace(/\\/g, '/'),
-        type: 'Header',
-        user_id: id,
-      };
+    // if (profile) {
+    //   const imageDataBody: UserImageDto = {
+    //     filename: profile.filename,
+    //     path: profile.path.replace(/\\/g, '/'),
+    //     type: 'Profile',
+    //     user_id: id,
+    //   };
+    //   await this.databaseService.$transaction([
+    //     // 'delete' only accepts unique columns
+    //     // Or you can use 'composite unique key' (although we don't use it here)
+    //     this.databaseService.userImages.deleteMany({
+    //       where: {
+    //         user_id: id,
+    //         type: 'Profile',
+    //       },
+    //     }),
+    //     this.databaseService.userImages.create({
+    //       data: { ...imageDataBody },
+    //     }),
+    //   ]);
+    // }
+    // if (header) {
+    //   const imageDataBody: UserImageDto = {
+    //     filename: header.filename,
+    //     path: header.path.replace(/\\/g, '/'),
+    //     type: 'Header',
+    //     user_id: id,
+    //   };
 
-      await this.databaseService.$transaction([
-        // 'delete' only accepts unique columns
-        // Or you can use 'composite unique key' (although we don't use it here)
-        this.databaseService.userImages.deleteMany({
-          where: {
-            user_id: id,
-            type: 'Header',
-          },
-        }),
-        this.databaseService.userImages.create({
-          data: { ...imageDataBody },
-        }),
-      ]);
-    }
+    //   await this.databaseService.$transaction([
+    //     // 'delete' only accepts unique columns
+    //     // Or you can use 'composite unique key' (although we don't use it here)
+    //     this.databaseService.userImages.deleteMany({
+    //       where: {
+    //         user_id: id,
+    //         type: 'Header',
+    //       },
+    //     }),
+    //     this.databaseService.userImages.create({
+    //       data: { ...imageDataBody },
+    //     }),
+    //   ]);
+    // }
 
     this.logger.log('User updated!', 'UsersService');
 
@@ -436,7 +468,11 @@ export class UsersService {
     });
 
     if (!findUser) {
-      throw new HttpException('User not found!', 404);
+      // throw new HttpException('User not found!', 404);
+      throw new RpcException({
+        code: 5,
+        message: 'No user found!',
+      });
     }
 
     const cacheKey = `user:${id}`;

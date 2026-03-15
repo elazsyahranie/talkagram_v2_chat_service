@@ -10,10 +10,10 @@ import { APP_GUARD } from '@nestjs/core';
     // AuthenticationGuard,
     // Use the code below if you want to make the 'AuthenticationGuard' global
     // NOTE: You don't need to manually add any global guards to controllers
-    {
-      provide: APP_GUARD,
-      useClass: AuthenticationGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthenticationGuard,
+    // },
   ],
   // exports: [AuthenticationGuard],
 })
