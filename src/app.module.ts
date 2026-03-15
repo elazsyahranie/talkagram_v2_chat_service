@@ -14,7 +14,6 @@ import { winstonConfig } from './logger/winston.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedisModule } from './redis.module';
-import { StaffsModule } from './staffs/staffs.module';
 import { StoresController } from './stores/stores.controller';
 import { StoresService } from './stores/stores.service';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
@@ -38,7 +37,6 @@ import { StoresService } from './stores/stores.service';
     // MyLoggerModule,
     AuthModule,
     RedisModule,
-    StaffsModule,
   ],
   controllers: [AppController, StoresController],
   providers: [
