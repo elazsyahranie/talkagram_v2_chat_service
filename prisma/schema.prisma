@@ -14,19 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Employee {
-  id          Int    @id @default(autoincrement())
-  name        String 
-  email       String
-  role        String
-  // Role        Role
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // @@check(role IN ('Admin', 'Intern'))
-}
-
-  // id          Int       @id @default(autoincrement())
+// id          Int       @id @default(autoincrement())
 
 model Users {
   id          String    @id @default(uuid()) @db.VarChar(255)
@@ -42,65 +30,7 @@ model Users {
   about       String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  company     Companies?
-  staff       Staffs[]
-  user_images UserImages[]
   // @@check(role IN ('Admin', 'Intern'))
-}
-
-model Companies {
-  id          String    @id @default(uuid()) @db.VarChar(255)
-  user_id     String    @unique
-  user        Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  code        String    @db.VarChar(255)
-  name        String    @db.VarChar(255)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model UserImages {
-  id          String    @id @default(uuid()) @db.VarChar(255)
-  user_id     String    
-  user        Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  path        String    @db.VarChar(255)
-  filename    String    @db.VarChar(255)
-  type        String    @db.VarChar(255)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Stores {
-  id           String    @id @default(uuid()) @db.VarChar(255)
-  name         String    @db.VarChar(255) 
-  address      String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  staffs       Staffs[]
-  store_images StoreImages[]
-}
-
-model Staffs {
-   id         String    @id @default(uuid()) @db.VarChar(255)
-   store_id   String    
-   stores     Stores    @relation(fields: [store_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  //  name       String    @db.VarChar(255)
-   user_id    String   
-   user       Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-   role       String    @db.VarChar(255)
-  //  password   String    @db.VarChar(255)
-   createdAt  DateTime  @default(now())
-   updatedAt  DateTime  @updatedAt
-}
-
-model StoreImages {
-  id          String    @id @default(uuid()) @db.VarChar(255)
-  store_id    String    
-  store       Stores    @relation(fields: [store_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  path        String    @db.VarChar(255)
-  filename    String    @db.VarChar(255)
-  type        String    @db.VarChar(255)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 }
 
 // enum Role {
