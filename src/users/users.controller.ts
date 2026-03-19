@@ -1,10 +1,17 @@
-import { Controller, Body, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Inject,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 import { LoginUserDto } from './dto/login-user.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom, timeout, catchError, throwError } from 'rxjs';
 
 @Controller('users')
 export class UsersController {
@@ -12,6 +19,7 @@ export class UsersController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
     private readonly usersService: UsersService,
+    @Inject('MEDIA_SERVICE') private readonly mediaClient: ClientProxy,
   ) {}
   // private readonly logger = new MyLoggerService(UsersController.name);
 
@@ -23,7 +31,7 @@ export class UsersController {
     };
   }
   @MessagePattern({ cmd: 'usersRegister' })
-  create(
+  async create(
     @Body() userData: Prisma.UsersCreateInput,
     // @UploadedFile() profile: Express.Multer.File,
     // @UploadedFiles()
@@ -32,11 +40,37 @@ export class UsersController {
     //   header?: Express.Multer.File[];
     // },
   ) {
-    return this.usersService.create(
+    const createUser = await this.usersService.create(
       userData,
       // files.profile ? files.profile[0] : undefined,
       // files.header ? files.header[0] : undefined,
     );
+
+    try {
+      await firstValueFrom(
+        this.mediaClient.send({ cmd: 'userImagesAdd' }, userData).pipe(
+          timeout(5000),
+          catchError((error) => {
+            throw new HttpException(
+              error.message || 'Media service unavailable',
+              error.code || HttpStatus.SERVICE_UNAVAILABLE,
+            );
+          }),
+        ),
+      );
+
+      // return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Media service unavailable',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return createUser;
   }
 
   @MessagePattern({ cmd: 'usersGetProfile' })

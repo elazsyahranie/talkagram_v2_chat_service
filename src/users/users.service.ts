@@ -190,14 +190,14 @@ export class UsersService {
             mode: 'insensitive',
           },
         },
-        {
-          company: {
-            name: {
-              contains: keywords,
-              mode: 'insensitive',
-            },
-          },
-        },
+        // {
+        //   company: {
+        //     name: {
+        //       contains: keywords,
+        //       mode: 'insensitive',
+        //     },
+        //   },
+        // },
       ];
     if (role) {
       where.role = role;
@@ -232,21 +232,21 @@ export class UsersService {
         phone: true,
         role: true,
         about: true,
-        company: {
-          select: {
-            id: true,
-            code: true,
-            name: true,
-            createdAt: true,
-          },
-        },
-        user_images: {
-          select: {
-            id: true,
-            path: true,
-            type: true,
-          },
-        },
+        // company: {
+        //   select: {
+        //     id: true,
+        //     code: true,
+        //     name: true,
+        //     createdAt: true,
+        //   },
+        // },
+        // user_images: {
+        //   select: {
+        //     id: true,
+        //     path: true,
+        //     type: true,
+        //   },
+        // },
       },
       skip: offset,
       take: limit,
@@ -265,15 +265,15 @@ export class UsersService {
       });
     }
 
-    const finalResult = result.map((obj) => {
-      const userImages = obj.user_images.length
-        ? obj.user_images.map((obj) => {
-            return { ...obj, path: `${process.env.PROJECT_URL}/${obj.path}` };
-          })
-        : [];
+    // const finalResult = result.map((obj) => {
+    //   const userImages = obj.user_images.length
+    //     ? obj.user_images.map((obj) => {
+    //         return { ...obj, path: `${process.env.PROJECT_URL}/${obj.path}` };
+    //       })
+    //     : [];
 
-      return { ...obj, user_images: userImages };
-    });
+    //   return { ...obj, user_images: userImages };
+    // });
 
     this.logger.log('Users fetched!', 'UsersService');
 
@@ -281,7 +281,8 @@ export class UsersService {
       totalData,
       totalPage,
       page,
-      data: finalResult,
+      // data: finalResult,
+      data: result,
     };
   }
 
@@ -307,21 +308,21 @@ export class UsersService {
         phone: true,
         role: true,
         about: true,
-        company: {
-          select: {
-            id: true,
-            code: true,
-            name: true,
-            createdAt: true,
-          },
-        },
-        user_images: {
-          select: {
-            id: true,
-            path: true,
-            type: true,
-          },
-        },
+        // company: {
+        //   select: {
+        //     id: true,
+        //     code: true,
+        //     name: true,
+        //     createdAt: true,
+        //   },
+        // },
+        // user_images: {
+        //   select: {
+        //     id: true,
+        //     path: true,
+        //     type: true,
+        //   },
+        // },
       },
     });
     if (!data) {
@@ -332,22 +333,22 @@ export class UsersService {
       });
     }
 
-    const userImages = data.user_images.length
-      ? data.user_images.map((obj) => {
-          return { ...obj, path: `${process.env.PROJECT_URL}/${obj.path}` };
-        })
-      : [];
+    // const userImages = data.user_images.length
+    //   ? data.user_images.map((obj) => {
+    //       return { ...obj, path: `${process.env.PROJECT_URL}/${obj.path}` };
+    //     })
+    //   : [];
 
     // this.logger.log('One user fetched!', 'UsersService');
 
-    const finalData = { ...data, user_images: userImages };
+    // const finalData = { ...data, user_images: userImages };
 
     // This means that the data cached in Redis would be stored for 3600 seconds (Time-To-Live or TTL)
     // Normally, any caches in Redis should have expiry times instead of being stored permanently
-    await this.redis.setex(cacheKey, 3600, JSON.stringify({ ...finalData }));
+    await this.redis.setex(cacheKey, 3600, JSON.stringify({ ...data }));
 
     return {
-      data: { ...finalData },
+      data,
     };
   }
 
@@ -452,13 +453,13 @@ export class UsersService {
       },
       select: {
         id: true,
-        user_images: {
-          select: {
-            id: true,
-            path: true,
-            type: true,
-          },
-        },
+        // user_images: {
+        //   select: {
+        //     id: true,
+        //     path: true,
+        //     type: true,
+        //   },
+        // },
       },
     });
 
@@ -479,12 +480,12 @@ export class UsersService {
       },
     });
 
-    if (findUser.user_images.length) {
-      const filePaths = findUser.user_images.map((obj) => {
-        return obj.path;
-      });
-      deleteFileIfExists(filePaths);
-    }
+    // if (findUser.user_images.length) {
+    //   const filePaths = findUser.user_images.map((obj) => {
+    //     return obj.path;
+    //   });
+    //   deleteFileIfExists(filePaths);
+    // }
 
     this.logger.log('User deleted!', 'UsersService');
 

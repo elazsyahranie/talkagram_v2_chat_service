@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { AuthModule } from 'src/auth/auth.module';
 dotenv.config();
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -18,6 +19,18 @@ dotenv.config();
       signOptions: {},
     }),
     AuthModule,
+    ClientsModule.register([
+      {
+        name: 'MEDIA_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: process.env.MEDIA_SERVICE_HOST || 'localhost',
+          port: process.env.MEDIA_SERVICE_PORT
+            ? parseInt(process.env.MEDIA_SERVICE_PORT, 10)
+            : 3001,
+        },
+      },
+    ]),
   ],
   controllers: [UsersController],
   providers: [UsersService],
