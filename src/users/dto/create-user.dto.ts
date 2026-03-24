@@ -1,6 +1,10 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateUserDto {
+  @IsString()
+  @IsUUID()
+  id: string;
+
   @IsString()
   first_name: string;
 
@@ -9,6 +13,9 @@ export class CreateUserDto {
 
   @IsString()
   last_name: string;
+
+  @IsString()
+  name: string;
 
   @IsString()
   @IsNotEmpty()
@@ -34,4 +41,7 @@ export class CreateUserDto {
 
   @IsString()
   about: string;
+
+  profile: Express.Multer.File;
+  header: Express.Multer.File;
 }

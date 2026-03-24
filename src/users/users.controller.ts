@@ -2,16 +2,20 @@ import {
   Controller,
   Body,
   Inject,
-  HttpException,
-  HttpStatus,
+  // HttpException,
+  // HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Prisma } from '@prisma/client';
 import { LoginUserDto } from './dto/login-user.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { MessagePattern, ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, timeout, catchError, throwError } from 'rxjs';
+import {
+  MessagePattern,
+  // ClientProxy
+} from '@nestjs/microservices';
+// import { firstValueFrom, timeout, catchError, throwError } from 'rxjs';
+// import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -19,7 +23,7 @@ export class UsersController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
     private readonly usersService: UsersService,
-    @Inject('MEDIA_SERVICE') private readonly mediaClient: ClientProxy,
+    // @Inject('MEDIA_SERVICE') private readonly mediaClient: ClientProxy,
   ) {}
   // private readonly logger = new MyLoggerService(UsersController.name);
 
@@ -32,12 +36,12 @@ export class UsersController {
   }
   @MessagePattern({ cmd: 'usersRegister' })
   async create(
+    // @Body() userData: CreateUserDto,
     @Body() userData: Prisma.UsersCreateInput,
-    // @UploadedFile() profile: Express.Multer.File,
-    // @UploadedFiles()
-    // files: {
-    //   profile?: Express.Multer.File[];
-    //   header?: Express.Multer.File[];
+    // body: {
+    //   userData: Prisma.UsersCreateInput;
+    //   profile?: Express.Multer.File;
+    //   header?: Express.Multer.File;
     // },
   ) {
     const createUser = await this.usersService.create(
@@ -45,30 +49,6 @@ export class UsersController {
       // files.profile ? files.profile[0] : undefined,
       // files.header ? files.header[0] : undefined,
     );
-
-    try {
-      await firstValueFrom(
-        this.mediaClient.send({ cmd: 'userImagesAdd' }, userData).pipe(
-          timeout(5000),
-          catchError((error) => {
-            throw new HttpException(
-              error.message || 'Media service unavailable',
-              error.code || HttpStatus.SERVICE_UNAVAILABLE,
-            );
-          }),
-        ),
-      );
-
-      // return result;
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Media service unavailable',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
 
     return createUser;
   }

@@ -12,12 +12,13 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { UserImageDto } from './dto/user-image.dto';
-import { deleteFileIfExists } from 'src/file-upload.util';
+// import { UserImageDto } from './dto/user-image.dto';
+// import { deleteFileIfExists } from 'src/file-upload.util';
 import * as dotenv from 'dotenv';
 import Redis from 'ioredis';
 dotenv.config();
 import { RpcException } from '@nestjs/microservices';
+// import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,11 +31,7 @@ export class UsersService {
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
-  async create(
-    requestBody: Prisma.UsersCreateInput,
-    // profile?: Express.Multer.File,
-    // header?: Express.Multer.File,
-  ) {
+  async create(requestBody: Prisma.UsersCreateInput) {
     let { first_name, middle_name, last_name } = requestBody;
     requestBody.name =
       `${first_name ? first_name : ''} ${middle_name ? middle_name : ''} ${last_name ? last_name : ''}`.trim();
@@ -114,7 +111,7 @@ export class UsersService {
 
     this.logger.log('User created!', 'UsersService');
 
-    return { name: createUser.name, email: createUser.email };
+    return { user_id, name: createUser.name, email: createUser.email };
   }
 
   async login(requestBody: LoginUserDto) {
