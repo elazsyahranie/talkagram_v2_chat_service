@@ -14,8 +14,6 @@ import {
   MessagePattern,
   // ClientProxy
 } from '@nestjs/microservices';
-// import { firstValueFrom, timeout, catchError, throwError } from 'rxjs';
-// import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -23,7 +21,6 @@ export class UsersController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: Logger,
     private readonly usersService: UsersService,
-    // @Inject('MEDIA_SERVICE') private readonly mediaClient: ClientProxy,
   ) {}
   // private readonly logger = new MyLoggerService(UsersController.name);
 
@@ -35,20 +32,8 @@ export class UsersController {
     };
   }
   @MessagePattern({ cmd: 'usersRegister' })
-  async create(
-    // @Body() userData: CreateUserDto,
-    @Body() userData: Prisma.UsersCreateInput,
-    // body: {
-    //   userData: Prisma.UsersCreateInput;
-    //   profile?: Express.Multer.File;
-    //   header?: Express.Multer.File;
-    // },
-  ) {
-    const createUser = await this.usersService.create(
-      userData,
-      // files.profile ? files.profile[0] : undefined,
-      // files.header ? files.header[0] : undefined,
-    );
+  async create(@Body() userData: Prisma.UsersCreateInput) {
+    const createUser = await this.usersService.create(userData);
 
     return createUser;
   }
@@ -80,18 +65,17 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  // Sending a competely blank form-data would throw error message
-  // This could be handled by either frontend (not sending the data to API if the form is completely blank)
-  // Or by backend (make a condition to not process the request any further if the request being sent is blank)
+  /* 
+    Sending a competely blank form-data would throw error message
+    This could be handled by either frontend (not sending the data to API if the form is completely blank)
+    Or by backend (make a condition to not process the request any further if the request being sent is blank) 
+  */
   @MessagePattern({ cmd: 'usersUpdate' })
-  update(@Body() body: { id: string; updatedUser: Prisma.UsersUpdateInput }) {
+  async update(
+    @Body() body: { id: string; updatedUser: Prisma.UsersUpdateInput },
+  ) {
     const { id, updatedUser } = body;
-    return this.usersService.update(
-      id,
-      updatedUser,
-      // files?.profile?.[0],
-      // files?.header?.[0],
-    );
+    return this.usersService.update(id, updatedUser);
   }
 
   @MessagePattern({ cmd: 'usersDeleteForAdmin' })

@@ -84,31 +84,6 @@ export class UsersService {
       data: requestBody,
     });
 
-    // if (profile) {
-    //   const imageDataBody: UserImageDto = {
-    //     filename: profile.filename,
-    //     path: profile.path.replace(/\\/g, '/'),
-    //     type: 'Profile',
-    //     user_id: user_id,
-    //   };
-    //   await this.databaseService.userImages.create({
-    //     data: { ...imageDataBody },
-    //   });
-    // }
-
-    // if (header) {
-    //   const imageDataBody: UserImageDto = {
-    //     filename: header.filename,
-    //     path: header.path.replace(/\\/g, '/'),
-    //     type: 'Header',
-    //     user_id: user_id,
-    //   };
-
-    //   await this.databaseService.userImages.create({
-    //     data: { ...imageDataBody },
-    //   });
-    // }
-
     this.logger.log('User created!', 'UsersService');
 
     return { user_id, name: createUser.name, email: createUser.email };
@@ -391,50 +366,6 @@ export class UsersService {
       where: { id },
       data: user,
     });
-
-    // if (profile) {
-    //   const imageDataBody: UserImageDto = {
-    //     filename: profile.filename,
-    //     path: profile.path.replace(/\\/g, '/'),
-    //     type: 'Profile',
-    //     user_id: id,
-    //   };
-    //   await this.databaseService.$transaction([
-    //     // 'delete' only accepts unique columns
-    //     // Or you can use 'composite unique key' (although we don't use it here)
-    //     this.databaseService.userImages.deleteMany({
-    //       where: {
-    //         user_id: id,
-    //         type: 'Profile',
-    //       },
-    //     }),
-    //     this.databaseService.userImages.create({
-    //       data: { ...imageDataBody },
-    //     }),
-    //   ]);
-    // }
-    // if (header) {
-    //   const imageDataBody: UserImageDto = {
-    //     filename: header.filename,
-    //     path: header.path.replace(/\\/g, '/'),
-    //     type: 'Header',
-    //     user_id: id,
-    //   };
-
-    //   await this.databaseService.$transaction([
-    //     // 'delete' only accepts unique columns
-    //     // Or you can use 'composite unique key' (although we don't use it here)
-    //     this.databaseService.userImages.deleteMany({
-    //       where: {
-    //         user_id: id,
-    //         type: 'Header',
-    //       },
-    //     }),
-    //     this.databaseService.userImages.create({
-    //       data: { ...imageDataBody },
-    //     }),
-    //   ]);
-    // }
 
     this.logger.log('User updated!', 'UsersService');
 
