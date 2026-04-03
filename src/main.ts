@@ -1,14 +1,17 @@
-import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import {
+  NestFactory,
+  // HttpAdapterHost
+} from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
-import { MyLoggerService } from './my-logger/my-logger.service';
+// import { MyLoggerService } from './my-logger/my-logger.service';
 // import { AllExceptionFilter } from './all-exceptions.filter';
-import { ExceptionsFilter } from './common/exceptions.filter';
+// import { ExceptionsFilter } from './common/exceptions.filter';
 dotenv.config();
-import { winstonConfig } from './logger/winston.config';
-import { WinstonModule } from 'nest-winston';
-import { ErrorFilter } from './common/error.filter';
-import { Reflector } from '@nestjs/core';
+// import { winstonConfig } from './logger/winston.config';
+// import { WinstonModule } from 'nest-winston';
+// import { ErrorFilter } from './common/error.filter';
+// import { Reflector } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
