@@ -56,6 +56,7 @@ export class UsersController {
     },
   ) {
     const { page, limit, order, keywords, role } = body;
+    this.logger.log(`Users fetched`, 'UsersService');
     return this.usersService.findAll(page, limit, order, keywords, role);
   }
 

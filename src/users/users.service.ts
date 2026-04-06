@@ -247,8 +247,6 @@ export class UsersService {
     //   return { ...obj, user_images: userImages };
     // });
 
-    this.logger.log('Users fetched!', 'UsersService');
-
     return {
       totalData,
       totalPage,
@@ -315,8 +313,11 @@ export class UsersService {
 
     // const finalData = { ...data, user_images: userImages };
 
-    // This means that the data cached in Redis would be stored for 3600 seconds (Time-To-Live or TTL)
-    // Normally, any caches in Redis should have expiry times instead of being stored permanently
+    /* 
+      This means that the data cached in Redis would be stored for 3600 seconds (Time-To-Live or TTL)
+      Normally, any caches in Redis should have expiry times instead of being stored permanently
+    */
+
     await this.redis.setex(cacheKey, 3600, JSON.stringify({ ...data }));
 
     return {
