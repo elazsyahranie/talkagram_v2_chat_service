@@ -14,6 +14,7 @@ import {
   MessagePattern,
   // ClientProxy
 } from '@nestjs/microservices';
+import { GetUserResult, GetUsersResult } from './dto/get-users-result.dto';
 
 @Controller('users')
 export class UsersController {
@@ -39,7 +40,7 @@ export class UsersController {
   }
 
   @MessagePattern({ cmd: 'usersGetProfile' })
-  getProfile(@Body() id: string) {
+  getProfile(@Body() id: string): Promise<GetUserResult> {
     this.logger.log(`Profile ${id} fetched`, 'UsersService');
     return this.usersService.findOne(id);
   }
@@ -54,14 +55,14 @@ export class UsersController {
       keywords: string;
       role: 'Admin' | 'User';
     },
-  ) {
+  ): Promise<GetUsersResult> {
     const { page, limit, order, keywords, role } = body;
     this.logger.log(`Users fetched`, 'UsersService');
     return this.usersService.findAll(page, limit, order, keywords, role);
   }
 
   @MessagePattern({ cmd: 'usersGetDetail' })
-  findOne(@Body() id: string) {
+  findOne(@Body() id: string): Promise<GetUserResult> {
     this.logger.log(`User id:${id} fetched`, 'UsersService');
     return this.usersService.findOne(id);
   }

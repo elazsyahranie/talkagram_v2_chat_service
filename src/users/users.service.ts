@@ -18,6 +18,8 @@ import * as dotenv from 'dotenv';
 import Redis from 'ioredis';
 dotenv.config();
 import { RpcException } from '@nestjs/microservices';
+import { GetUserResult, GetUsersResult } from './dto/get-users-result.dto';
+// import { GetUsersResult } from './dto/get-users-result.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
@@ -148,7 +150,7 @@ export class UsersService {
     order: string,
     keywords?: string,
     role?: 'Admin' | 'User',
-  ) {
+  ): Promise<GetUsersResult> {
     const where: Prisma.UsersWhereInput = {};
     if (keywords)
       // where.name = {
@@ -256,7 +258,7 @@ export class UsersService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<GetUserResult> {
     const cacheKey = `user:${id}`;
 
     const cached = await this.redis.get(cacheKey);
