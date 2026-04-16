@@ -14,12 +14,14 @@ import { winstonConfig } from './logger/winston.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedisModule } from './redis.module';
+import { ChatModule } from './chats/chats.module';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
 // import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
     UsersModule,
+    ChatModule,
     DatabaseModule,
     CommonModule,
     WinstonModule.forRoot(winstonConfig),
@@ -39,6 +41,7 @@ import { RedisModule } from './redis.module';
   controllers: [AppController],
   providers: [
     AppService,
+
     // { provide: APP_GUARD, useClass: ThrottlerGuard } Activates the throttle
     // {
     //   provide: APP_FILTER,
