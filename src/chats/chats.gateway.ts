@@ -5,8 +5,10 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { ChatsService } from './chats.service';
 
 @WebSocketGateway({
   cors: {
@@ -14,6 +16,7 @@ import { Server, Socket } from 'socket.io';
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private readonly chatsService: ChatsService) {}
   @WebSocketServer()
   server: Server;
 
@@ -25,9 +28,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('Client disconnected:', client.id);
   }
 
-  @SubscribeMessage('message')
+  // Join room
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(
+    @MessageBody() data: { room: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.join(data.room);
+    console.log(`Client ${client.id} joined room ${data.room}`);
+  }
+
+  @SubscribeMessage('sendMessage')
   handleMessage(@MessageBody() payload: any) {
-    console.log('Message received');
-    this.server.emit('message', payload);
+    // console.log('Message received');
+    // console.dir(payload, { depth: null });
+    this.chatsService.addChat(payload);
+    this.server.emit('sendMessage', payload);
   }
 }
