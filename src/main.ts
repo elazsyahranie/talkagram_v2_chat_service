@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
@@ -23,22 +24,34 @@ async function bootstrap() {
     // }
   );
 
+  /* 
+    This code works only for HTTP requests. For WebSockets, 
+    the ValidationPipe is implemented in `chats.gateway.ts`
+  */
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   // Start listening for incoming messages
-  await app.listen(process.env.MEDIA_SERVICE_HTTP_PORT ?? 4003);
+  await app.listen(process.env.CHATS_SERVICE_HTTP_PORT ?? 4002);
 
   app.connectMicroservice({
     transport: Transport.TCP,
     options: {
-      host: process.env.MEDIA_SERVICE_HOST || 'localhost',
-      port: process.env.MEDIA_SERVICE_PORT
-        ? parseInt(process.env.MEDIA_SERVICE_PORT, 10)
-        : 3003,
+      host: process.env.CHATS_SERVICE_HOST || 'localhost',
+      port: process.env.CHATS_SERVICE_PORT
+        ? parseInt(process.env.CHATS_SERVICE_PORT, 10)
+        : 3002,
     },
   });
 
   await app.startAllMicroservices();
 
-  console.log('Media Service is listening on port 3002');
+  console.log('Chat Service is listening on port 3002');
   // // const { httpAdapter } = app.get(HttpAdapterHost);
   // // app.useGlobalFilters(new ExceptionsFilter());
   // // app.useGlobalFilters(new ErrorFilter());

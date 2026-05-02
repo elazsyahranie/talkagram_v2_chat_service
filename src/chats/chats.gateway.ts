@@ -1,3 +1,4 @@
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -6,11 +7,21 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   ConnectedSocket,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatsService } from './chats.service';
 import { JwtService } from '@nestjs/jwt';
+import { CreateRoomDto } from './dto/createRoom.dto';
+import { sendMessageDto } from './dto/sendMessage.dto';
 
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+  }),
+)
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -56,20 +67,41 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // Join room
+  /* 
+    -Next perlu dibuat agar bisa memasukan data room (baik personal chat atau group) ke dala database
+    -Personal chat atau group membutuhkan data yang berbeda: 
+     -Untuk personal chat, kirim ID dari user dan lawan bicaranya 
+     -Untuk group, kirim ID dari user 
+      semua partisipan group
+    -Logic untuk membuat room bisa dimasukkan ke dalam function yang sama atau function yang berbeda
+  */
+  @SubscribeMessage('createRoom')
+  handleCreateRoom(
+    @MessageBody() data: CreateRoomDto,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.chatsService.createRoom(data);
+    console.log('handleCreateRoom');
+    console.dir(data, { depth: null });
+    console.dir(client.data.user, { depth: null });
+    // client.join(data.room);
+    // throw new WsException('Invalid data');
+  }
+
   @SubscribeMessage('joinRoom')
   handleJoinRoom(
     @MessageBody() data: { room: string },
     @ConnectedSocket() client: Socket,
   ) {
+    console.log('joinRoom');
     client.join(data.room);
-    console.log(`Client ${client.id} joined room ${data.room}`);
   }
 
   @SubscribeMessage('sendMessage')
-  handleMessage(@MessageBody() payload: any) {
+  handleMessage(@MessageBody() message: sendMessageDto) {
     // console.log('Message received');
     // console.dir(payload, { depth: null });
-    this.chatsService.addChat(payload);
-    this.server.emit('sendMessage', payload);
+    this.chatsService.addChat(message);
+    this.server.emit('sendMessage', message);
   }
 }

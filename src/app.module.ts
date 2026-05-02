@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 // import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 // import { APP_GUARD } from '@nestjs/core';
@@ -20,7 +19,6 @@ import { ChatModule } from './chats/chats.module';
 
 @Module({
   imports: [
-    UsersModule,
     ChatModule,
     DatabaseModule,
     CommonModule,
