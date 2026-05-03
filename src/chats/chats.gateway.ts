@@ -45,6 +45,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // console.dir(client, { depth: null });
 
     if (!token) {
+      client.emit('error', {
+        status: 'error',
+        message: 'No token!',
+      });
       client.disconnect();
       return;
     }
