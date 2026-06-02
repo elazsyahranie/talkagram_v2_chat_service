@@ -43,10 +43,15 @@ export class ChatsService {
     // const groupParticipants: Partial<Prisma.RoomParticipantsCreateManyInput[]> =
     //   [];
     const roomParticipantsBody: Prisma.RoomParticipantsCreateManyInput[] = [
-      { id: uuidv4(), user_id: requestBody.admin, room_id },
+      { id: uuidv4(), user_id: requestBody.admin, role: 'Admin', room_id },
     ];
     requestBody.otherParticipants.forEach((user_id) => {
-      roomParticipantsBody.push({ id: uuidv4(), user_id, room_id });
+      roomParticipantsBody.push({
+        id: uuidv4(),
+        user_id,
+        role: 'User',
+        room_id,
+      });
     });
 
     await this.databaseService.$transaction([

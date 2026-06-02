@@ -1,8 +1,21 @@
 -- CreateTable
+CREATE TABLE "Rooms" (
+    "id" VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255),
+    "type" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Rooms_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "RoomParticipants" (
     "id" VARCHAR(255) NOT NULL,
     "user_id" VARCHAR(255) NOT NULL,
-    "room_id" TEXT NOT NULL,
+    "room_id" VARCHAR(255) NOT NULL,
+    "role" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
