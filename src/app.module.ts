@@ -16,7 +16,6 @@ import { RedisModule } from './redis.module';
 import { ChatsModule } from './chats/chats.module';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
 // import { APP_FILTER } from '@nestjs/core';
-import { Chats2Module } from './chats_2/chats_2.module';
 
 @Module({
   imports: [
