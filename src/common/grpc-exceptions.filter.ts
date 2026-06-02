@@ -15,6 +15,7 @@ import { ZodError } from 'zod';
 export class GrpcExceptionsFilter extends BaseRpcExceptionFilter {
   catch(exception: any, _host: ArgumentsHost): Observable<any> {
     // Use this to find out the exact error (in some cases the error message is incomplete)
+    console.log('GRPC Exceptions test');
     console.dir(exception, { depth: null });
 
     if (exception instanceof RpcException) {
@@ -45,6 +46,7 @@ export class GrpcExceptionsFilter extends BaseRpcExceptionFilter {
         // details: exception.errors,
       }));
     } else {
+      console.log('Error something else');
       const error = {
         code: 13, // INTERNAL
         message: exception?.message || 'Internal server error',

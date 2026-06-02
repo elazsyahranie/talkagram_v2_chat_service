@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ChatGateway } from './chats.gateway';
-import { ChatsService } from './chats.service';
+import { Chats2Service } from './chats_2.service';
+import { Chats2Controller } from './chats_2.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { ChatsController } from './chats.controller';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
@@ -15,7 +14,7 @@ import { DatabaseModule } from 'src/database/database.module';
       signOptions: {},
     }),
   ],
-  controllers: [ChatsController],
-  providers: [ChatsService, ChatGateway],
+  providers: [Chats2Service],
+  controllers: [Chats2Controller],
 })
-export class ChatsModule {}
+export class Chats2Module {}

@@ -32,6 +32,8 @@ export class ExceptionsFilter extends BaseExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     // Use this to find out the exact error (in some cases the error message is incomplete)
+
+    // console.log('KENAPA EXCEPTION HTTP???');
     console.dir(exception, { depth: null });
 
     const myResponseObj: MyResponseObj = {

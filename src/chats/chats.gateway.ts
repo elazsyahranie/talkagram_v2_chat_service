@@ -71,26 +71,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   // Join room
-  /* 
-    -Next perlu dibuat agar bisa memasukan data room (baik personal chat atau group) ke dala database
-    -Personal chat atau group membutuhkan data yang berbeda: 
-     -Untuk personal chat, kirim ID dari user dan lawan bicaranya 
-     -Untuk group, kirim ID dari user 
-      semua partisipan group
-    -Logic untuk membuat room bisa dimasukkan ke dalam function yang sama atau function yang berbeda
-  */
-  @SubscribeMessage('createRoom')
-  handleCreateRoom(
-    @MessageBody() data: CreateRoomDto,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.chatsService.createRoom(data);
-    console.log('handleCreateRoom');
-    console.dir(data, { depth: null });
-    console.dir(client.data.user, { depth: null });
-    // client.join(data.room);
-    // throw new WsException('Invalid data');
-  }
+  // @SubscribeMessage('createRoom')
+  // handleCreateRoom(
+  //   @MessageBody() data: CreateRoomDto,
+  //   @ConnectedSocket() client: Socket,
+  // ) {
+  //   console.log('createRoom - chats.gateway.ts');
+  //   const participants = [...new Set(data.interlocutors)];
+  //   // this.chatsService.createRoom([...participants, client.data.user.id]);
+  //   // client.join(data.room);
+  //   // throw new WsException('Invalid data');
+  // }
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(

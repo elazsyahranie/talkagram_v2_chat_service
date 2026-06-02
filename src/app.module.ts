@@ -13,14 +13,15 @@ import { winstonConfig } from './logger/winston.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RedisModule } from './redis.module';
-import { ChatModule } from './chats/chats.module';
+import { ChatsModule } from './chats/chats.module';
 // import { GrpcsExceptionFilter } from './common/grpc-exceptions.filter';
 // import { APP_FILTER } from '@nestjs/core';
+import { Chats2Module } from './chats_2/chats_2.module';
 
 @Module({
   imports: [
-    ChatModule,
-    DatabaseModule,
+    ChatsModule,
+    // DatabaseModule, // Ga perlu di import di sini kecuali ingin digunakan secara global
     CommonModule,
     WinstonModule.forRoot(winstonConfig),
     ServeStaticModule.forRoot({
@@ -35,6 +36,7 @@ import { ChatModule } from './chats/chats.module';
     // MyLoggerModule,
     AuthModule,
     RedisModule,
+    // Chats2Module,
   ],
   controllers: [AppController],
   providers: [

@@ -11,6 +11,9 @@ export class ErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
 
+    console.log('APA KE EXCEPTION YANG INI???');
+    console.dir(exception, { depth: null });
+
     if (exception instanceof HttpException) {
       response.status(exception.getStatus()).json({
         errors: exception.getResponse(),
