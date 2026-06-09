@@ -4,6 +4,7 @@ CREATE TABLE "Rooms" (
     "name" VARCHAR(255),
     "type" VARCHAR(255) NOT NULL,
     "description" TEXT,
+    "dm_key" VARCHAR(255),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -22,6 +23,9 @@ CREATE TABLE "RoomParticipants" (
 
     CONSTRAINT "RoomParticipants_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Rooms_dm_key_key" ON "Rooms"("dm_key");
 
 -- AddForeignKey
 ALTER TABLE "RoomParticipants" ADD CONSTRAINT "RoomParticipants_room_id_fkey" FOREIGN KEY ("room_id") REFERENCES "Rooms"("id") ON DELETE CASCADE ON UPDATE CASCADE;

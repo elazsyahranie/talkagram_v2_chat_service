@@ -12,7 +12,7 @@ import {
   // ClientProxy
 } from '@nestjs/microservices';
 import { ChatsService } from './chats.service';
-import { CreateRoomDto } from './dto/createRoom.dto';
+import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateGrupDto } from './dto/create-group.dto';
 import { Prisma } from '@prisma/client';
 

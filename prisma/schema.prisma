@@ -21,6 +21,7 @@ model Rooms {
   name                String?   @db.VarChar(255)
   type                String    @db.VarChar(255)
   description         String?
+  dm_key              String?   @db.VarChar(255)     @unique
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   rooms_participants  RoomParticipants[]
@@ -36,4 +37,14 @@ model RoomParticipants {
   description     String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  chats           Chats[]
+}
+
+model Chats {
+  id              String               @id @default(uuid()) @db.VarChar(255)
+  sender          String               @db.VarChar(255)
+  RoomParticipant RoomParticipants     @relation(fields: [sender], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chat            String               @db.VarChar(255)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 }
