@@ -85,15 +85,27 @@ export class ChatsService {
     // }
   }
 
-  async findOrAddRoom(participants: string[]): Promise<string> {
-    const dmKey = participants.sort().join(':');
+  async findOrAddRoom(
+    sender: string,
+    interlocutor: string,
+  ): Promise<{ room_id: string; room_participant_id: string }> {
+    /* Alphabetically sort the ID of user and their interlocutor to help find their personal chat room */
+    const dmKey = [sender, interlocutor].sort().join(':');
 
     /* Find a personal chat room containing each participants IDs */
+    /* The following will find the room that has any room_participant containing the user_id equal to the sender */
     const findRoom = await this.databaseService.rooms.findFirst({
-      where: { dm_key: dmKey },
+      where: {
+        dm_key: dmKey,
+        rooms_participants: { some: { user_id: sender } },
+      },
+      include: { rooms_participants: { where: { user_id: sender } } },
     });
 
+    // console.dir(findRoom, { depth: null });
+
     let room_id = '';
+    let room_participant_id = '';
     if (!findRoom) {
       room_id = uuidv4();
       const createRoomBody: Prisma.RoomsCreateInput = {
@@ -102,14 +114,30 @@ export class ChatsService {
         dm_key: dmKey,
       };
       const roomParticipantsBody: Prisma.RoomParticipantsCreateManyInput[] = [];
-      participants.forEach((user_id) => {
-        roomParticipantsBody.push({
-          id: uuidv4(),
-          user_id,
-          role: 'User',
-          room_id,
-        });
-      });
+      room_participant_id = uuidv4();
+      const senderData = {
+        id: uuidv4(),
+        user_id: room_participant_id,
+        role: 'User',
+        room_id,
+      };
+      roomParticipantsBody.push(senderData);
+      const interlocutorData = {
+        id: uuidv4(),
+        user_id: interlocutor,
+        role: 'User',
+        room_id,
+      };
+      roomParticipantsBody.push(interlocutorData);
+
+      // participants.forEach((user_id) => {
+      //   roomParticipantsBody.push({
+      //     id: uuidv4(),
+      //     user_id,
+      //     role: 'User',
+      //     room_id,
+      //   });
+      // });
 
       await this.databaseService.$transaction([
         this.databaseService.rooms.create({
@@ -120,12 +148,34 @@ export class ChatsService {
         }),
       ]);
     } else {
+      // const findRoomParticipantId = findRoom.rooms_participants.find(
+      //   (obj) => obj.id === room_participant_id,
+      // );
       room_id = findRoom.id;
+      room_participant_id = findRoom.rooms_participants[0].id;
     }
 
-    return room_id;
+    return { room_id, room_participant_id };
+    // return
   }
 
   // Tambahkan logic untuk menyimpan chat pada database
-  async addPersonalChat(room: string, chat: string): Promise<void | string> {}
+  async addPersonalChat(
+    room: string,
+    sender: string,
+    chat: string,
+  ): Promise<void | string> {
+    const chat_id = uuidv4();
+
+    await this.databaseService.chats.create({
+      data: {
+        id: chat_id,
+        chat,
+        sender,
+        room_id: room,
+      },
+    });
+
+    return 'success';
+  }
 }

@@ -126,17 +126,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         4) Ingat, memory Socket.io itu bukan tempat data disimpan permanen
     */
 
-    const userId = client.data.user.id;
+    /* The ID of user extracted from the token */
+    const userId: string = client.data.user.id;
+    const { interlocutor, message } = data;
 
     // This function returns the room ID
-    const getRoomId = await this.chatsService.findOrAddRoom([
-      userId,
-      data.interlocutor,
-    ]);
+    /* 
+      The 'sender_id' here would be the ID of a 'RoomParticipants' table,
+      not the user_id
+    */
+    const { room_id, room_participant_id } =
+      await this.chatsService.findOrAddRoom(userId, interlocutor);
 
-    client.join(getRoomId);
-    console.log(
-      `${userId} and ${data.interlocutor} has joined the room ${getRoomId}`,
+    client.join(room_id);
+    console.log(`${userId} and ${interlocutor} has joined the room ${room_id}`);
+
+    this.server.emit('sendPersonalMessage', message);
+    await this.chatsService.addPersonalChat(
+      room_id,
+      room_participant_id,
+      message,
     );
 
     // this.roomParticipants.set(roomId, [client.data.user.id, data.interlocutor]);
