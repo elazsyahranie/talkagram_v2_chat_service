@@ -135,18 +135,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       The 'sender_id' here would be the ID of a 'RoomParticipants' table,
       not the user_id
     */
-    const { room_id, room_participant_id } =
-      await this.chatsService.findOrAddRoom(userId, interlocutor);
-
-    client.join(room_id);
-    console.log(`${userId} and ${interlocutor} has joined the room ${room_id}`);
-
-    this.server.emit('sendPersonalMessage', message);
-    await this.chatsService.addPersonalChat(
-      room_id,
-      room_participant_id,
-      message,
+    // const { room_id, room_participant_id } =
+    const findRoom = await this.chatsService.findOrAddRoom(
+      userId,
+      interlocutor,
     );
+    if (findRoom) {
+      console.dir(findRoom, { depth: null });
+    }
+
+    // client.join(room_id);
+    // console.log(`${userId} and ${interlocutor} has joined the room ${room_id}`);
+
+    // this.server.emit('sendPersonalMessage', message);
+    // await this.chatsService.addPersonalChat(
+    //   room_id,
+    //   room_participant_id,
+    //   message,
+    // );
 
     // this.roomParticipants.set(roomId, [client.data.user.id, data.interlocutor]);
     // console.dir(this.roomParticipants, { depth: null });

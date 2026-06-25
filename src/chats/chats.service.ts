@@ -88,18 +88,22 @@ export class ChatsService {
   async findOrAddRoom(
     sender: string,
     interlocutor: string,
-  ): Promise<{ room_id: string; room_participant_id: string }> {
+  ): Promise<{ room_id: string; room_participant_id: string } | null> {
+    // Promise<string> {
     /* Alphabetically sort the ID of user and their interlocutor to help find their personal chat room */
     const dmKey = [sender, interlocutor].sort().join(':');
 
     /* Find a personal chat room containing each participants IDs */
     /* The following will find the room that has any room_participant containing the user_id equal to the sender */
+    /* 
+      Di sini diganti aja logic Prisma nya 
+      -Pertama kita ambil data room berdasarkan dmKey nya 
+      -Kedua kita ambil `room_participant_id` berdasarkan id dari room dan id dari user nya
+    */
     const findRoom = await this.databaseService.rooms.findFirst({
       where: {
         dm_key: dmKey,
-        rooms_participants: { some: { user_id: sender } },
       },
-      include: { rooms_participants: { where: { user_id: sender } } },
     });
 
     // console.dir(findRoom, { depth: null });
@@ -113,11 +117,12 @@ export class ChatsService {
         type: 'Personal Chat',
         dm_key: dmKey,
       };
+
       const roomParticipantsBody: Prisma.RoomParticipantsCreateManyInput[] = [];
       room_participant_id = uuidv4();
       const senderData = {
         id: uuidv4(),
-        user_id: room_participant_id,
+        user_id: sender,
         role: 'User',
         room_id,
       };
@@ -147,16 +152,39 @@ export class ChatsService {
           data: roomParticipantsBody,
         }),
       ]);
+
+      console.log('Room created!');
+      return { room_id, room_participant_id };
     } else {
       // const findRoomParticipantId = findRoom.rooms_participants.find(
       //   (obj) => obj.id === room_participant_id,
       // );
-      room_id = findRoom.id;
-      room_participant_id = findRoom.rooms_participants[0].id;
+      const findRoomParticipant =
+        await this.databaseService.roomParticipants.findFirst({
+          where: {
+            room_id: findRoom.id,
+            user_id: sender,
+          },
+        });
+
+      console.log(findRoom.id);
+      console.log(sender);
+      console.log(interlocutor);
+      console.dir(findRoomParticipant, { depth: null });
+
+      if (findRoomParticipant) {
+        room_id = findRoom.id;
+        room_participant_id = findRoomParticipant.id;
+
+        console.log('Room already existed!');
+        return { room_id, room_participant_id };
+      } else {
+        return null;
+      }
     }
 
-    return { room_id, room_participant_id };
-    // return
+    // return { room_id, room_participant_id };
+    // return 'success';
   }
 
   // Tambahkan logic untuk menyimpan chat pada database

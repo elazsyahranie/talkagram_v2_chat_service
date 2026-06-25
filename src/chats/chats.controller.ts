@@ -32,4 +32,10 @@ export class ChatsController {
     const result = await this.chatsService.createGroup(requestBody);
     return result;
   }
+
+  @MessagePattern({ cmd: 'chatsGetRoomsByUser' })
+  async getRoomsByUserId(@Body() user: string) {
+    console.dir(user, { depth: null });
+    return `Success: Get rooms by ID ${user}`;
+  }
 }
