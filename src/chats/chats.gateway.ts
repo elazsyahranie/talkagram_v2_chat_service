@@ -142,14 +142,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
     if (findRoom) {
       const { room_id, room_participant_id } = findRoom;
-      console.dir(findRoom, { depth: null });
 
       client.join(room_id);
       console.log(
         `${userId} and ${interlocutor} has joined the room ${room_id}`,
       );
 
-      this.server.emit('sendPersonalMessage', message);
+      // this.server.emit('sendPersonalMessage', message);
+      this.server.to(room_id).emit('sendPersonalMessage', message);
       await this.chatsService.addPersonalChat(
         room_id,
         room_participant_id,

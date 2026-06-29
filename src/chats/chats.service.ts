@@ -106,7 +106,8 @@ export class ChatsService {
       },
     });
 
-    // console.dir(findRoom, { depth: null });
+    console.log('Find room');
+    console.dir(findRoom, { depth: null });
 
     let room_id = '';
     let room_participant_id = '';
@@ -153,7 +154,6 @@ export class ChatsService {
         }),
       ]);
 
-      console.log('Room created!');
       return { room_id, room_participant_id };
     } else {
       // const findRoomParticipantId = findRoom.rooms_participants.find(
@@ -167,24 +167,15 @@ export class ChatsService {
           },
         });
 
-      console.log(findRoom.id);
-      console.log(sender);
-      console.log(interlocutor);
-      console.dir(findRoomParticipant, { depth: null });
-
       if (findRoomParticipant) {
         room_id = findRoom.id;
         room_participant_id = findRoomParticipant.id;
 
-        console.log('Room already existed!');
         return { room_id, room_participant_id };
       } else {
         return null;
       }
     }
-
-    // return { room_id, room_participant_id };
-    // return 'success';
   }
 
   // Tambahkan logic untuk menyimpan chat pada database
