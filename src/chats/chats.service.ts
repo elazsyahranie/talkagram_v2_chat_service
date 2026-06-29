@@ -121,7 +121,7 @@ export class ChatsService {
       const roomParticipantsBody: Prisma.RoomParticipantsCreateManyInput[] = [];
       room_participant_id = uuidv4();
       const senderData = {
-        id: uuidv4(),
+        id: room_participant_id,
         user_id: sender,
         role: 'User',
         room_id,
