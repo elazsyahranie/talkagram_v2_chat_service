@@ -69,15 +69,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user_id = payload.id;
 
       /* 
+        Untuk notifikasi, kita buatkan room pada server Socket.
+        Room ini tidak perlu kita simpan dengan format yng sama pada database,
+        karena tidak mungkin kita mengirim pesan realtime ke user yang sedang
+        tidak terhubung ke server Socket
+      */
+      client.join(`user:${user_id}`);
+      // console.dir(this.server.sockets.adapter.rooms, { depth: null });
+
+      /* 
         Di sini kita buatkan logic untuk join personal room untuk tiap connection 
       */
-      const findRoom = await this.chatsService.findOrAddPersonalRoom(user_id);
-      if (findRoom) {
-        const { room_id } = findRoom;
+      // const findRoom = await this.chatsService.findOrAddPersonalRoom(user_id);
+      // if (findRoom) {
+      //   const { room_id } = findRoom;
 
-        client.join(room_id);
-        console.log(`${client.id} has joined the personal room ${room_id}`);
-      }
+      //   client.join(room_id);
+      //   console.log(`${client.id} has joined the personal room ${room_id}`);
+      // }
 
       console.log('Authenticated user:', user_id);
     } catch {
@@ -148,11 +157,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       The 'sender_id' here would be the ID of a 'RoomParticipants' table,
       not the user_id
     */
-    // const { room_id, room_participant_id } =
     const findRoom = await this.chatsService.findOrAddPersonalChatRoom(
       userId,
       interlocutor,
     );
+
     if (findRoom) {
       const { room_id, room_participant_id } = findRoom;
 
@@ -161,6 +170,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         `${userId} and ${interlocutor} has joined the room ${room_id}`,
       );
 
+      // const receiverPersonalRooms = this.server.sockets.adapter.rooms.get(
+      //   `user:${interlocutor}`,
+      // );
+      // console.dir(this.server.sockets.adapter.rooms, { depth: null });
+      // console.log(`user:${interlocutor}`);
+      // if (receiverPersonalRooms) {
+      //   console.dir(receiverPersonalRooms.values(), { depth: null });
+      // }
       // this.server.emit('sendPersonalMessage', message);
       this.server.to(room_id).emit('sendPersonalMessage', message);
       await this.chatsService.addPersonalChat(
@@ -168,6 +185,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         room_participant_id,
         message,
       );
+
+      // Notify the users of new messages
+      this.server.to(`user:${interlocutor}`).emit('newNotification', message);
     }
 
     // client.join(room_id);

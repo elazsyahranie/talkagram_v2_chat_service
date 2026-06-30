@@ -124,9 +124,6 @@ export class ChatsService {
       },
     });
 
-    console.log('Find room');
-    console.dir(findRoom, { depth: null });
-
     let room_id = '';
     let room_participant_id = '';
     if (!findRoom) {
