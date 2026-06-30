@@ -45,7 +45,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //   console.log('New client connected:', client.id);
   //   // console.dir(client.handshake, { depth: null });
   // }
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const token = client.handshake.auth?.token;
 
     // console.dir(client, { depth: null });
@@ -64,9 +64,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         secret: process.env.TOKEN_SECRET_KEY,
       });
 
+      // Store the payload on the 'client.data.user'
       client.data.user = payload;
+      const user_id = payload.id;
 
-      console.log('Authenticated user:', payload.id);
+      /* 
+        Di sini kita buatkan logic untuk join personal room untuk tiap connection 
+      */
+      const findRoom = await this.chatsService.findOrAddPersonalRoom(user_id);
+      if (findRoom) {
+        const { room_id } = findRoom;
+
+        client.join(room_id);
+        console.log(`${client.id} has joined the personal room ${room_id}`);
+      }
+
+      console.log('Authenticated user:', user_id);
     } catch {
       client.disconnect();
     }
@@ -136,7 +149,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       not the user_id
     */
     // const { room_id, room_participant_id } =
-    const findRoom = await this.chatsService.findOrAddRoom(
+    const findRoom = await this.chatsService.findOrAddPersonalChatRoom(
       userId,
       interlocutor,
     );

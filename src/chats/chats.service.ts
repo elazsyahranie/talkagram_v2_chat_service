@@ -85,7 +85,31 @@ export class ChatsService {
     // }
   }
 
-  async findOrAddRoom(
+  async findOrAddPersonalRoom(
+    user_id: string,
+  ): Promise<{ room_id: string } | null> {
+    const findRoomByUserIdKey = await this.databaseService.rooms.findFirst({
+      where: { type: 'Personal Room', user_id_key: user_id },
+    });
+
+    if (findRoomByUserIdKey) {
+      return { room_id: findRoomByUserIdKey.id };
+    } else {
+      const room_id = uuidv4();
+      const createRoomBody: Prisma.RoomsCreateInput = {
+        id: room_id,
+        type: 'Personal Room',
+        user_id_key: user_id,
+      };
+      await this.databaseService.rooms.create({
+        data: createRoomBody,
+      });
+
+      return { room_id };
+    }
+  }
+
+  async findOrAddPersonalChatRoom(
     sender: string,
     interlocutor: string,
   ): Promise<{ room_id: string; room_participant_id: string } | null> {
@@ -94,12 +118,6 @@ export class ChatsService {
     const dmKey = [sender, interlocutor].sort().join(':');
 
     /* Find a personal chat room containing each participants IDs */
-    /* The following will find the room that has any room_participant containing the user_id equal to the sender */
-    /* 
-      Di sini diganti aja logic Prisma nya 
-      -Pertama kita ambil data room berdasarkan dmKey nya 
-      -Kedua kita ambil `room_participant_id` berdasarkan id dari room dan id dari user nya
-    */
     const findRoom = await this.databaseService.rooms.findFirst({
       where: {
         dm_key: dmKey,
