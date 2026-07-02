@@ -113,7 +113,7 @@ export class ChatsService {
   async findOrAddPersonalChatRoom(
     sender: string,
     receiver: string,
-  ): Promise<{ room_id: string; room_participant_id: string } | null> {
+  ): Promise<{ room_id: string }> {
     // Promise<string> {
     /* Alphabetically sort the ID of user and their receiver to help find their personal chat room */
     const dmKey = [sender, receiver].sort().join(':');
@@ -126,7 +126,7 @@ export class ChatsService {
     });
 
     let room_id = '';
-    let room_participant_id = '';
+    // let room_participant_id = '';
     if (!findRoom) {
       room_id = uuidv4();
       const createRoomBody: Prisma.RoomsCreateInput = {
@@ -136,9 +136,9 @@ export class ChatsService {
       };
 
       const roomParticipantsBody: Prisma.RoomParticipantsCreateManyInput[] = [];
-      room_participant_id = uuidv4();
+      // room_participant_id = uuidv4();
       const senderData = {
-        id: room_participant_id,
+        id: uuidv4(),
         user_id: sender,
         role: 'User',
         room_id,
@@ -152,15 +152,6 @@ export class ChatsService {
       };
       roomParticipantsBody.push(receiverData);
 
-      // participants.forEach((user_id) => {
-      //   roomParticipantsBody.push({
-      //     id: uuidv4(),
-      //     user_id,
-      //     role: 'User',
-      //     room_id,
-      //   });
-      // });
-
       await this.databaseService.$transaction([
         this.databaseService.rooms.create({
           data: createRoomBody,
@@ -170,28 +161,12 @@ export class ChatsService {
         }),
       ]);
 
-      return { room_id, room_participant_id };
+      // return { room_id };
     } else {
-      // const findRoomParticipantId = findRoom.rooms_participants.find(
-      //   (obj) => obj.id === room_participant_id,
-      // );
-      const findRoomParticipant =
-        await this.databaseService.roomParticipants.findFirst({
-          where: {
-            room_id: findRoom.id,
-            user_id: sender,
-          },
-        });
-
-      if (findRoomParticipant) {
-        room_id = findRoom.id;
-        room_participant_id = findRoomParticipant.id;
-
-        return { room_id, room_participant_id };
-      } else {
-        return null;
-      }
+      room_id = findRoom.id;
     }
+
+    return { room_id };
   }
 
   // Tambahkan logic untuk menyimpan chat pada database

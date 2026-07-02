@@ -69,10 +69,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user_id = payload.id;
 
       /* 
-        Untuk notifikasi, kita buatkan room pada server Socket.
-        Room ini tidak perlu kita simpan dengan format yng sama pada database,
-        karena tidak mungkin kita mengirim pesan realtime ke user yang sedang
-        tidak terhubung ke server Socket
+        Di bawah ini adalah function untuk membuat setiap user 
+        yang terhubung dengan server Socket akan otomatis join 
+        ke room personal masing-masing. Tujuannya adalah untuk
+        mengirimkan notifikasi akan pesan-pesan baru, atau berita-berita
+        terbaru yang terkait dengan user tersebut
       */
       client.join(`user:${user_id}`);
       // console.dir(this.server.sockets.adapter.rooms, { depth: null });
@@ -154,51 +155,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       The 'sender_id' here would be the ID of a 'RoomParticipants' table,
       not the user_id
     */
-    const findRoom = await this.chatsService.findOrAddPersonalChatRoom(
+    const { room_id } = await this.chatsService.findOrAddPersonalChatRoom(
       userId,
       receiver,
     );
 
-    if (findRoom) {
-      const { room_id, room_participant_id } = findRoom;
+    // if (findRoom) {
+    // const { room_id } = findRoom;
 
-      client.join(room_id);
-      console.log(`${userId} and ${receiver} has joined the room ${room_id}`);
+    client.join(room_id);
+    console.log(`${userId} and ${receiver} has joined the room ${room_id}`);
 
-      // const receiverPersonalRooms = this.server.sockets.adapter.rooms.get(
-      //   `user:${receiver}`,
-      // );
-      // console.dir(this.server.sockets.adapter.rooms, { depth: null });
-      // console.log(`user:${receiver}`);
-      // if (receiverPersonalRooms) {
-      //   console.dir(receiverPersonalRooms.values(), { depth: null });
-      // }
-      // this.server.emit('sendPersonalMessage', message);
-      this.server.to(room_id).emit('sendPersonalMessage', message);
-      await this.chatsService.addPersonalChat(
-        room_id,
-        room_participant_id,
-        message,
-      );
+    this.server.to(room_id).emit('sendPersonalMessage', message);
+    await this.chatsService.addPersonalChat(room_id, userId, message);
 
-      // Notify the users about the new messages
-      this.server.to(`user:${receiver}`).emit('newNotification', message);
-    }
-
-    // client.join(room_id);
-    // console.log(`${userId} and ${receiver} has joined the room ${room_id}`);
-
-    // this.server.emit('sendPersonalMessage', message);
-    // await this.chatsService.addPersonalChat(
-    //   room_id,
-    //   room_participant_id,
-    //   message,
-    // );
-
-    // this.roomParticipants.set(roomId, [client.data.user.id, data.receiver]);
-    // console.dir(this.roomParticipants, { depth: null });
-    // // this.chatsService.addChat(message);
-    // // this.server.emit('sendMessage', message);
+    // Notify the users about the new messages
+    this.server.to(`user:${receiver}`).emit('newNotification', message);
+    // }
   }
 
   @SubscribeMessage('sendMessage')
