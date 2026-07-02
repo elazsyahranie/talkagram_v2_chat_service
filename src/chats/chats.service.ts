@@ -109,13 +109,14 @@ export class ChatsService {
     }
   }
 
+  // Ada yang error di sini
   async findOrAddPersonalChatRoom(
     sender: string,
-    interlocutor: string,
+    receiver: string,
   ): Promise<{ room_id: string; room_participant_id: string } | null> {
     // Promise<string> {
-    /* Alphabetically sort the ID of user and their interlocutor to help find their personal chat room */
-    const dmKey = [sender, interlocutor].sort().join(':');
+    /* Alphabetically sort the ID of user and their receiver to help find their personal chat room */
+    const dmKey = [sender, receiver].sort().join(':');
 
     /* Find a personal chat room containing each participants IDs */
     const findRoom = await this.databaseService.rooms.findFirst({
@@ -143,13 +144,13 @@ export class ChatsService {
         room_id,
       };
       roomParticipantsBody.push(senderData);
-      const interlocutorData = {
+      const receiverData = {
         id: uuidv4(),
-        user_id: interlocutor,
+        user_id: receiver,
         role: 'User',
         room_id,
       };
-      roomParticipantsBody.push(interlocutorData);
+      roomParticipantsBody.push(receiverData);
 
       // participants.forEach((user_id) => {
       //   roomParticipantsBody.push({
