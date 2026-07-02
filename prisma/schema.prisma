@@ -25,6 +25,8 @@ model Rooms {
   user_id_key         String?   @db.VarChar(255)     @unique
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  latest_chat_id      String?   @db.VarChar(255)
+  latestChat          Chats?    @relation("LatestChat", fields: [latest_chat_id], references: [id], onDelete: SetNull)
   rooms_participants  RoomParticipants[]
   chats               Chats[]
   // @@check(role IN ('Admin', 'Intern'))
@@ -51,4 +53,5 @@ model Chats {
   updatedAt       DateTime             @updatedAt
   room_id         String               @db.VarChar(255)
   room            Rooms                @relation(fields: [room_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  latestChatInRoom   Rooms[]           @relation("LatestChat")
 }
