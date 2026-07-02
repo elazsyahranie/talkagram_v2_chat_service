@@ -174,17 +174,30 @@ export class ChatsService {
     room: string,
     sender: string,
     chat: string,
-  ): Promise<void | string> {
+  ): Promise<string> {
     const chat_id = uuidv4();
-
-    await this.databaseService.chats.create({
-      data: {
-        id: chat_id,
-        chat,
-        sender,
-        room_id: room,
-      },
-    });
+    // await this.databaseService.chats.create({
+    //   data: {
+    //     id: chat_id,
+    //     chat,
+    //     sender,
+    //     room_id: room,
+    //   },
+    // });
+    await this.databaseService.$transaction([
+      this.databaseService.chats.create({
+        data: {
+          id: chat_id,
+          chat,
+          sender,
+          room_id: room,
+        },
+      }),
+      this.databaseService.rooms.update({
+        where: { id: room },
+        data: { latest_chat_id: chat_id },
+      }),
+    ]);
 
     return 'success';
   }
