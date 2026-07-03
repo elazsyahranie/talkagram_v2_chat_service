@@ -15,6 +15,7 @@ import { ChatsService } from './chats.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { CreateGrupDto } from './dto/create-group.dto';
 import { Prisma } from '@prisma/client';
+import { GetRoomsData } from './dto/get-rooms-result.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -34,8 +35,9 @@ export class ChatsController {
   }
 
   @MessagePattern({ cmd: 'chatsGetRoomsByUser' })
-  async getRoomsByUserId(@Body() user: string) {
-    console.dir(user, { depth: null });
-    return `Success: Get rooms by ID ${user}`;
+  async getRoomsByUserId(@Body() user: string): Promise<GetRoomsData> {
+    // console.dir(user, { depth: null });
+    const result = await this.chatsService.getRoomsByUser(user);
+    return result;
   }
 }

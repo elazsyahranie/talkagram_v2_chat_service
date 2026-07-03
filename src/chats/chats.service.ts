@@ -15,6 +15,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
+import { GetRoomsData } from './dto/get-rooms-result.dto';
 
 @Injectable()
 export class ChatsService {
@@ -200,5 +201,25 @@ export class ChatsService {
     ]);
 
     return 'success';
+  }
+
+  async getRoomsByUser(user: string): Promise<GetRoomsData> {
+    // console.dir(user, { depth: null });
+    const result = await this.databaseService.rooms.findMany({
+      select: {
+        id: true,
+        name: true,
+        type: true,
+      },
+    });
+    if (!result.length) {
+      // throw new NotFoundException('Not found!');
+      throw new RpcException({
+        code: 5,
+        message: 'Not found!',
+      });
+    }
+
+    return { data: result };
   }
 }
