@@ -210,6 +210,18 @@ export class ChatsService {
         id: true,
         name: true,
         type: true,
+        latest_chat_id: true,
+        // chats: {
+        //   select: { id: true, sender: true, chat: true, createdAt: true },
+        // },
+        latestChat: {
+          select: {
+            id: true,
+            sender: true,
+            chat: true,
+            createdAt: true,
+          },
+        },
       },
     });
     if (!result.length) {
