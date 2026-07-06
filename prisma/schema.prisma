@@ -25,6 +25,7 @@ model Rooms {
   user_id_key         String?   @db.VarChar(255)     @unique
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  lastActivityAt      DateTime  @default(now())
   latest_chat_id      String?   @db.VarChar(255)
   latestChat          Chats?    @relation("LatestChat", fields: [latest_chat_id], references: [id], onDelete: SetNull)
   rooms_participants  RoomParticipants[]

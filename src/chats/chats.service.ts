@@ -15,7 +15,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
-import { GetRoomsData } from './dto/get-rooms-result.dto';
+import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 
 @Injectable()
 export class ChatsService {
@@ -185,6 +185,8 @@ export class ChatsService {
     //     room_id: room,
     //   },
     // });
+    const createdAt = new Date();
+
     await this.databaseService.$transaction([
       this.databaseService.chats.create({
         data: {
@@ -192,25 +194,53 @@ export class ChatsService {
           chat,
           sender,
           room_id: room,
+          createdAt,
         },
       }),
       this.databaseService.rooms.update({
         where: { id: room },
-        data: { latest_chat_id: chat_id },
+        data: { latest_chat_id: chat_id, lastActivityAt: createdAt },
       }),
     ]);
 
     return 'success';
   }
 
-  async getRoomsByUser(user: string): Promise<GetRoomsData> {
-    // console.dir(user, { depth: null });
+  async getRoomsByUser(
+    user: string,
+    order: string,
+    page: number,
+    limit: number,
+  ): Promise<GetRoomsResult> {
+    console.log('user');
+    console.dir(user, { depth: null });
+    const where: Prisma.RoomsWhereInput = {};
+    where.rooms_participants = {
+      some: {
+        user_id: user,
+      },
+    };
+
+    const totalData = await this.databaseService.rooms.count({ where });
+
+    const totalPage = Math.ceil(totalData / limit);
+    const offset = page * limit - limit;
+
+    const orderBy: Prisma.RoomsOrderByWithRelationInput = {};
+    if (order === 'latest') {
+      orderBy.lastActivityAt = 'desc';
+    } else if (order === 'newest') {
+      orderBy.lastActivityAt = 'asc';
+    }
+
     const result = await this.databaseService.rooms.findMany({
+      where,
       select: {
         id: true,
         name: true,
         type: true,
         latest_chat_id: true,
+        lastActivityAt: true,
         // chats: {
         //   select: { id: true, sender: true, chat: true, createdAt: true },
         // },
@@ -222,7 +252,16 @@ export class ChatsService {
             createdAt: true,
           },
         },
+        rooms_participants: {
+          select: {
+            id: true,
+            user_id: true,
+          },
+        },
       },
+      skip: offset,
+      take: limit,
+      orderBy,
     });
     if (!result.length) {
       // throw new NotFoundException('Not found!');
@@ -232,6 +271,26 @@ export class ChatsService {
       });
     }
 
-    return { data: result };
+    const finalResult = result.map((obj) => {
+      const { id, name, type, lastActivityAt, latestChat } = obj;
+
+      let modifiedLatestChat: {
+        id: string;
+        // createdAt: Date;
+        sender: string;
+        chat: string;
+      } | null = null;
+      if (latestChat) {
+        modifiedLatestChat = {
+          id: latestChat.id,
+          sender: latestChat.id,
+          chat: latestChat.chat,
+        };
+      }
+
+      return { id, name, type, lastActivityAt, latestChat: modifiedLatestChat };
+    });
+
+    return { totalData, totalPage, page, data: finalResult };
   }
 }
