@@ -212,8 +212,6 @@ export class ChatsService {
     page: number,
     limit: number,
   ): Promise<GetRoomsResult> {
-    console.log('user');
-    console.dir(user, { depth: null });
     const where: Prisma.RoomsWhereInput = {};
     where.rooms_participants = {
       some: {
@@ -221,7 +219,9 @@ export class ChatsService {
       },
     };
 
-    const totalData = await this.databaseService.rooms.count({ where });
+    const totalData = await this.databaseService.rooms.count({
+      where,
+    });
 
     const totalPage = Math.ceil(totalData / limit);
     const offset = page * limit - limit;
