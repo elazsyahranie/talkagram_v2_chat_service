@@ -8,7 +8,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { RpcException } from '@nestjs/microservices';
 import { sendMessageDto } from './dto/send-message.dto';
 import { Prisma } from '@prisma/client';
-import { CreateGrupDto } from './dto/create-group.dto';
+import { CreateGroupDto } from './dto/create-group.dto';
 import { ValidationService } from 'src/common/validation.service';
 import { ChatValidation } from './chats.validation';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
@@ -16,6 +16,7 @@ import { Logger } from 'winston';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Injectable()
 export class ChatsService {
@@ -25,7 +26,7 @@ export class ChatsService {
     private validationService: ValidationService,
     private readonly databaseService: DatabaseService,
   ) {}
-  async createGroup(requestBody: CreateGrupDto) {
+  async createGroup(requestBody: CreateGroupDto) {
     this.validationService.validate(ChatValidation.CREATEGROUP, requestBody);
 
     // console.log('Create group');
@@ -292,5 +293,11 @@ export class ChatsService {
     });
 
     return { totalData, totalPage, page, data: finalResult };
+  }
+
+  async updateGroup(requestBody: UpdateGroupDto) {
+    this.validationService.validate(ChatValidation.UPDATEGROUP, requestBody);
+
+    return { status: 'Group update succeed', data: requestBody };
   }
 }

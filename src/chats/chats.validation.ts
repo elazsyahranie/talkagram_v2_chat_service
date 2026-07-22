@@ -9,6 +9,12 @@ export class ChatValidation {
     about: z.string().min(1).max(100).optional(),
   });
 
+  static readonly UPDATEGROUP: ZodType = z.object({
+    name: z.string().min(1).max(100).optional(),
+    participants: z.array(z.string()).optional(),
+    about: z.string().min(1).max(100).optional(),
+  });
+
   // static readonly PARTICIPANTS: ZodType = z.object({
   //   user: z.string(),
   //   role: z.literal(['Admin', 'User'], {

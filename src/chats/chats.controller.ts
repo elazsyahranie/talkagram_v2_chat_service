@@ -13,9 +13,10 @@ import {
 } from '@nestjs/microservices';
 import { ChatsService } from './chats.service';
 import { CreateRoomDto } from './dto/create-room.dto';
-import { CreateGrupDto } from './dto/create-group.dto';
+import { CreateGroupDto } from './dto/create-group.dto';
 import { Prisma } from '@prisma/client';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -29,7 +30,7 @@ export class ChatsController {
   async createRoom(@Body() request: Prisma.RoomsCreateInput) {}
 
   @MessagePattern({ cmd: 'chatsCreateGroup' })
-  async createGroup(@Body() requestBody: CreateGrupDto) {
+  async createGroup(@Body() requestBody: CreateGroupDto) {
     const result = await this.chatsService.createGroup(requestBody);
     return result;
   }
@@ -52,6 +53,12 @@ export class ChatsController {
       page,
       limit,
     );
+    return result;
+  }
+
+  @MessagePattern({ cmd: 'chatsUpdateGroup' })
+  async updateRoom(@Body() requestBody: UpdateGroupDto) {
+    const result = await this.chatsService.updateGroup(requestBody);
     return result;
   }
 }

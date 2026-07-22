@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateGrupDto {
+export class CreateGroupDto {
   @IsString()
   @IsNotEmpty()
   name: string;
