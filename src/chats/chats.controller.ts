@@ -17,6 +17,7 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { Prisma } from '@prisma/client';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -59,6 +60,12 @@ export class ChatsController {
   @MessagePattern({ cmd: 'chatsUpdateGroup' })
   async updateRoom(@Body() requestBody: UpdateGroupDto) {
     const result = await this.chatsService.updateGroup(requestBody);
+    return result;
+  }
+
+  @MessagePattern({ cmd: 'chatsUpdateGroupParticipants' })
+  async updateRoomParticipants(@Body() requestBody: UpdateGroupParticipants) {
+    const result = await this.chatsService.updateGroupParticipants(requestBody);
     return result;
   }
 }

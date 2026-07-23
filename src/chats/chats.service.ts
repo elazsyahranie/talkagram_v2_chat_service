@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 
 @Injectable()
 export class ChatsService {
@@ -334,5 +335,9 @@ export class ChatsService {
 
     // return { status: 'Group update succeed', data: requestBody };
     return { status: 'success' };
+  }
+
+  async updateGroupParticipants(requestBody: UpdateGroupParticipants) {
+    return { status: 'succeeded', data: { ...requestBody } };
   }
 }
