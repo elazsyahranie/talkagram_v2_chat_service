@@ -338,6 +338,14 @@ export class ChatsService {
   }
 
   async updateGroupParticipants(requestBody: UpdateGroupParticipants) {
+    console.log('requestBody');
+    console.dir(requestBody, { depth: null });
+
+    this.validationService.validate(
+      ChatValidation.UPDATEGROUPPARTICIPANTS,
+      requestBody,
+    );
+
     return { status: 'succeeded', data: { ...requestBody } };
   }
 }
