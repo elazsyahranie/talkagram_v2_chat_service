@@ -11,7 +11,8 @@ export class ChatValidation {
 
   static readonly UPDATEGROUP: ZodType = z.object({
     name: z.string().min(1).max(100).optional(),
-    participants: z.array(z.string()).optional(),
+    room_id: z.string().min(1).max(100),
+    // participants: z.array(z.string()).optional(),
     about: z.string().min(1).max(100).optional(),
   });
 

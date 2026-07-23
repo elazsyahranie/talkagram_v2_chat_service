@@ -295,9 +295,44 @@ export class ChatsService {
     return { totalData, totalPage, page, data: finalResult };
   }
 
+  /* 
+    The following is to update the group, not the participants. 
+    Participants update is on a different function 
+  */
   async updateGroup(requestBody: UpdateGroupDto) {
     this.validationService.validate(ChatValidation.UPDATEGROUP, requestBody);
 
-    return { status: 'Group update succeed', data: requestBody };
+    // Send response if form-data was sent blank
+    if (!requestBody) {
+      return { status: 'success' };
+    }
+
+    let { admin, room_id } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: admin, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    let updatedData: UpdateGroupDto = {};
+    if (requestBody.name) updatedData.name = requestBody.name;
+    if (requestBody.description)
+      updatedData.description = requestBody.description;
+
+    await this.databaseService.rooms.update({
+      where: { id: room_id },
+      data: updatedData,
+    });
+
+    this.logger.log('Group updated!', 'ChatsService');
+
+    // return { status: 'Group update succeed', data: requestBody };
+    return { status: 'success' };
   }
 }
