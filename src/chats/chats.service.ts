@@ -88,7 +88,43 @@ export class ChatsService {
       });
     }
 
-    return { status: 'succeeded', data: { ...requestBody } };
+    // Prevent any duplicate users in the `participants` array of objects
+    const seen = new Set();
+    const uniqueParticipants = requestBody.participants.filter((obj) => {
+      if (seen.has(obj.user)) {
+        return false;
+      }
+      seen.add(obj.user);
+      return true;
+    });
+
+    await Promise.all(
+      uniqueParticipants.map(async (obj) => {
+        /* 
+          Make sure that only those that haven't been added 
+          to the group could be added to the group
+        */
+        const findParticipant =
+          await this.databaseService.roomParticipants.findFirst({
+            where: { room_id: room_id, user_id: obj.user },
+          });
+
+        if (!findParticipant) {
+          await this.databaseService.roomParticipants.create({
+            data: {
+              id: uuidv4(),
+              room_id: room_id,
+              user_id: obj.user,
+              role: obj.role,
+            },
+          });
+        }
+      }),
+    );
+
+    return {
+      status: 'success',
+    };
   }
 
   createRoomPersonalChat(requestBody: any) {
