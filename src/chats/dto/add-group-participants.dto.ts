@@ -7,10 +7,10 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class UpdateGroupParticipants {
+export class AddGroupParticipants {
   @IsString()
   @IsNotEmpty()
-  admin_id: string;
+  admin: string;
 
   @IsString()
   @IsNotEmpty()

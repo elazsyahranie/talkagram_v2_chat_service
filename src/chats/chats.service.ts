@@ -17,7 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from 'src/database/database.service';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
+import { AddGroupParticipants } from './dto/add-group-participants.dto';
 
 @Injectable()
 export class ChatsService {
@@ -67,6 +67,28 @@ export class ChatsService {
     ]);
 
     return { status: 'Group creation succeeded' };
+  }
+
+  async addGroupParticipants(requestBody: AddGroupParticipants) {
+    this.validationService.validate(
+      ChatValidation.ADDGROUPPARTICIPANTS,
+      requestBody,
+    );
+
+    let { admin, room_id } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: admin, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    return { status: 'succeeded', data: { ...requestBody } };
   }
 
   createRoomPersonalChat(requestBody: any) {
@@ -335,17 +357,5 @@ export class ChatsService {
 
     // return { status: 'Group update succeed', data: requestBody };
     return { status: 'success' };
-  }
-
-  async updateGroupParticipants(requestBody: UpdateGroupParticipants) {
-    console.log('requestBody');
-    console.dir(requestBody, { depth: null });
-
-    this.validationService.validate(
-      ChatValidation.UPDATEGROUPPARTICIPANTS,
-      requestBody,
-    );
-
-    return { status: 'succeeded', data: { ...requestBody } };
   }
 }

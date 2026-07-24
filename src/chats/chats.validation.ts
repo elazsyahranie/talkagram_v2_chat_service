@@ -9,13 +9,6 @@ export class ChatValidation {
     about: z.string().min(1).max(100).optional(),
   });
 
-  static readonly UPDATEGROUP: ZodType = z.object({
-    name: z.string().min(1).max(100).optional(),
-    room_id: z.string().min(1).max(100),
-    // participants: z.array(z.string()).optional(),
-    about: z.string().min(1).max(100).optional(),
-  });
-
   static readonly PARTICIPANTS: ZodType = z.object({
     user: z.string(),
     role: z.literal(['Admin', 'User'], {
@@ -24,14 +17,21 @@ export class ChatValidation {
     }),
   });
 
-  static readonly UPDATEGROUPPARTICIPANTS: ZodType = z.object({
-    admin_id: z.string().min(1).max(100),
+  static readonly ADDGROUPPARTICIPANTS: ZodType = z.object({
+    admin: z.string().min(1).max(100),
     room_id: z.string().min(1).max(100),
     participants: z
       .array(this.PARTICIPANTS)
       .min(1, 'At least one participant is required')
       .max(100),
     // about: z.string().min(1).max(100).optional(),
+  });
+
+  static readonly UPDATEGROUP: ZodType = z.object({
+    name: z.string().min(1).max(100).optional(),
+    room_id: z.string().min(1).max(100),
+    // participants: z.array(z.string()).optional(),
+    about: z.string().min(1).max(100).optional(),
   });
 
   // Custom, more permissive validation (if needed)
