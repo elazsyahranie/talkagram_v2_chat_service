@@ -18,6 +18,7 @@ import { DatabaseService } from 'src/database/database.service';
 import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { AddGroupParticipants } from './dto/add-group-participants.dto';
+import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 
 @Injectable()
 export class ChatsService {
@@ -352,6 +353,10 @@ export class ChatsService {
     });
 
     return { totalData, totalPage, page, data: finalResult };
+  }
+
+  async updateGroupParticipants(requestBody: UpdateGroupParticipants) {
+    return { status: 'succeeded', data: requestBody };
   }
 
   /* 
