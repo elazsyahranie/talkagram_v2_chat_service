@@ -10,7 +10,7 @@ export class ChatValidation {
   });
 
   static readonly PARTICIPANTS: ZodType = z.object({
-    user: z.string(),
+    user: z.string().min(1).max(100),
     role: z.literal(['Admin', 'User'], {
       error: (iss) =>
         iss.input === undefined ? 'Role is required!' : 'Invalid input!',
@@ -25,6 +25,15 @@ export class ChatValidation {
       .min(1, 'At least one participant is required')
       .max(100),
     // about: z.string().min(1).max(100).optional(),
+  });
+
+  static readonly UPDATEGROUPPARTICIPANTS: ZodType = z.object({
+    admin: z.string().min(1).max(100),
+    room_id: z.string().min(1).max(100),
+    participants: z
+      .array(this.PARTICIPANTS)
+      .min(1, 'At least one participant is required')
+      .max(100),
   });
 
   static readonly UPDATEGROUP: ZodType = z.object({
