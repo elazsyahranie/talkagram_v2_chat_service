@@ -19,6 +19,7 @@ import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { AddGroupParticipants } from './dto/add-group-participants.dto';
 import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
+import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.dto';
 
 @Injectable()
 export class ChatsService {
@@ -409,6 +410,10 @@ export class ChatsService {
     );
 
     return { status: 'success' };
+  }
+
+  async selfUpdateGroupPaticipant(requestBody: SelfUpdateGroupParticipant) {
+    return { status: 'success - chats service', data: requestBody };
   }
 
   /* 

@@ -19,6 +19,7 @@ import { GetRoomsData, GetRoomsResult } from './dto/get-rooms-result.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { AddGroupParticipants } from './dto/add-group-participants.dto';
 import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
+import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -61,6 +62,15 @@ export class ChatsController {
       page,
       limit,
     );
+    return result;
+  }
+
+  @MessagePattern({ cmd: 'chatsSelfUpdateGroupParticipant' })
+  async selfUpdateGroupParticipant(
+    @Body() requestBody: SelfUpdateGroupParticipant,
+  ) {
+    const result =
+      await this.chatsService.selfUpdateGroupPaticipant(requestBody);
     return result;
   }
 
