@@ -27,6 +27,15 @@ export class ChatValidation {
     // about: z.string().min(1).max(100).optional(),
   });
 
+  static readonly SELFUPDATEGROUPPARTICIPANT: ZodType = z.object({
+    user: z.string().min(1).max(100),
+    room_id: z.string().min(1).max(100),
+    role: z.literal(['Admin', 'User'], {
+      error: (iss) =>
+        iss.input === undefined ? 'Role is required!' : 'Invalid input!',
+    }),
+  });
+
   static readonly UPDATEGROUPPARTICIPANTS: ZodType = z.object({
     admin: z.string().min(1).max(100),
     room_id: z.string().min(1).max(100),

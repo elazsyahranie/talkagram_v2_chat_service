@@ -9,6 +9,10 @@ import {
   ValidateNested,
   IsEnum,
 } from 'class-validator';
-// import { PartialType } from '@nestjs/mapped-types';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class SelfUpdateGroupParticipant extends ParticipantDto {}
+export class SelfUpdateGroupParticipant extends PartialType(ParticipantDto) {
+  @IsString()
+  @IsNotEmpty()
+  room_id: string;
+}

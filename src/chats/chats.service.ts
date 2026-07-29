@@ -413,7 +413,50 @@ export class ChatsService {
   }
 
   async selfUpdateGroupPaticipant(requestBody: SelfUpdateGroupParticipant) {
-    return { status: 'success - chats service', data: requestBody };
+    this.validationService.validate(
+      ChatValidation.SELFUPDATEGROUPPARTICIPANT,
+      requestBody,
+    );
+
+    let { user, room_id, role } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: user, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    /* 
+      If the user wants to remove its admin status, 
+      make sure that the group has other admins  
+    */
+    if (role !== 'Admin') {
+      const findOtherAdmins = await this.databaseService.roomParticipants.count(
+        {
+          where: { room_id, role: 'Admin' },
+        },
+      );
+      if (findOtherAdmins < 2) {
+        throw new RpcException({
+          code: 16,
+          message: 'Unauthorized',
+        });
+      }
+    }
+
+    await this.databaseService.roomParticipants.update({
+      where: { id: groupAdminValidation.id },
+      data: { role },
+    });
+
+    return {
+      status: 'success',
+    };
   }
 
   /* 
