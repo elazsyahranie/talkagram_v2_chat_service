@@ -52,6 +52,15 @@ export class ChatValidation {
     about: z.string().min(1).max(100).optional(),
   });
 
+  static readonly DELETEGROUPPARTICIPANTS: ZodType = z.object({
+    admin: z.string().min(1).max(100),
+    room_id: z.string().min(1).max(100),
+    participantsForDeletion: z
+      .array(z.string().trim().min(1, 'At least one participant is required'))
+      .min(1, 'At least one participant is required')
+      .max(100),
+  });
+
   // Custom, more permissive validation (if needed)
   // const permissiveUuid = z.string().refine((val) =>
   //   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val),

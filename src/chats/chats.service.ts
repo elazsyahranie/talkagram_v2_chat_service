@@ -502,9 +502,59 @@ export class ChatsService {
   }
 
   async deleteGroupParticipants(requestBody: DeleteGroupParticipants) {
-    return {
-      status: 'succeeded - deleteGroupParticipants',
-      data: { ...requestBody },
-    };
+    this.validationService.validate(
+      ChatValidation.DELETEGROUPPARTICIPANTS,
+      requestBody,
+    );
+
+    let { admin, room_id } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: admin, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    /* 
+      1) Prevent any duplicate users in the `participants` array of objects 
+      2) Prevent the user from updating itself as a participant here
+    */
+    const seen = new Set();
+    const uniqueParticipants = requestBody.participantsForDeletion.filter(
+      (obj) => {
+        if (seen.has(obj) || obj === admin) {
+          return false;
+        }
+        seen.add(obj);
+        return true;
+      },
+    );
+
+    await Promise.all(
+      uniqueParticipants.map(async (obj) => {
+        /* 
+          Make sure that only those that have been a part 
+          of the group could be added to the group
+        */
+        const findParticipant =
+          await this.databaseService.roomParticipants.findFirst({
+            where: { room_id: room_id, user_id: obj },
+          });
+
+        if (findParticipant) {
+          // We're using the ID taken from 'findParticipant' above
+          await this.databaseService.roomParticipants.delete({
+            where: { id: findParticipant.id },
+          });
+        }
+      }),
+    );
+
+    return { status: 'succeess' };
   }
 }
