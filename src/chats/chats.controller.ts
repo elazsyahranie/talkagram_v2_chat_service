@@ -21,6 +21,7 @@ import { AddGroupParticipants } from './dto/add-group-participants.dto';
 import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.dto';
 import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
+import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
 
 @Controller('chats')
 export class ChatsController {
@@ -84,6 +85,15 @@ export class ChatsController {
   @MessagePattern({ cmd: 'chatsUpdateGroup' })
   async updateRoom(@Body() requestBody: UpdateGroupDto) {
     const result = await this.chatsService.updateGroup(requestBody);
+    return result;
+  }
+
+  @MessagePattern({ cmd: 'chatsSelfDeleteGroupParticipant' })
+  async selfDeleteGroupParticipant(
+    @Body() requestBody: SelfDeleteGroupParticipant,
+  ) {
+    const result =
+      await this.chatsService.selfDeleteGroupParticipant(requestBody);
     return result;
   }
 
