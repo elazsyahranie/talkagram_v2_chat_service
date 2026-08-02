@@ -560,6 +560,50 @@ export class ChatsService {
   }
 
   async selfDeleteGroupParticipant(requestBody: SelfDeleteGroupParticipant) {
-    return { status: 'succeeded', data: { ...requestBody } };
+    this.validationService.validate(
+      ChatValidation.SELFDELETEGROUPPARTICIPANT,
+      requestBody,
+    );
+
+    /* 
+      Check if the user exit ir not. 
+      If not, then simply don't execute the rest of the logic
+    */
+    const { user, room_id } = requestBody;
+    const checkParticipant =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { user_id: user, room_id: room_id },
+      });
+    if (checkParticipant) {
+      /* 
+        If the user is an admin, then we need 
+        to make sure that there are other admins 
+        in the group in order to execute the logic
+      */
+      const { role } = checkParticipant;
+      if (role === 'Admin') {
+        const countAllAdmins =
+          await this.databaseService.roomParticipants.count({
+            where: { room_id, role: 'Admin' },
+          });
+        if (countAllAdmins < 2) {
+          throw new RpcException({
+            code: 16,
+            message: 'Unauthorized',
+          });
+        }
+      }
+
+      await this.databaseService.roomParticipants.delete({
+        where: { id: checkParticipant.id },
+      });
+
+      this.logger.log(
+        `Participant ${user} self-delete from room ${room_id}!`,
+        'ChatsService',
+      );
+    }
+
+    return { status: 'succeeded' };
   }
 }
