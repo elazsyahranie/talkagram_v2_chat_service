@@ -22,6 +22,7 @@ import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.dto';
 import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
+import { DeleteGroupDto } from './dto/delete-group.dto';
 
 @Injectable()
 export class ChatsService {
@@ -605,5 +606,9 @@ export class ChatsService {
     }
 
     return { status: 'succeeded' };
+  }
+
+  async deleteGroup(requestBody: DeleteGroupDto) {
+    return { status: 'succeeded - delete group', data: requestBody };
   }
 }
