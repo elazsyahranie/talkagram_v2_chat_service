@@ -45,6 +45,9 @@ export class ChatValidation {
       .max(100),
   });
 
+  /* 
+    Di sini tambahkan validasi untuk 'admin'
+  */
   static readonly UPDATEGROUP: ZodType = z.object({
     name: z.string().min(1).max(100).optional(),
     room_id: z.string().min(1).max(100),
