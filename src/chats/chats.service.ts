@@ -609,6 +609,27 @@ export class ChatsService {
   }
 
   async deleteGroup(requestBody: DeleteGroupDto) {
-    return { status: 'succeeded - delete group', data: requestBody };
+    this.validationService.validate(ChatValidation.DELETEGROUP, requestBody);
+
+    let { admin, room_id } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: admin, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    await this.databaseService.rooms.delete({
+      where: { id: room_id },
+    });
+
+    this.logger.log(`Group ${room_id} deleted!`, 'ChatsService');
+
+    return { status: 'succeeded' };
   }
 }
