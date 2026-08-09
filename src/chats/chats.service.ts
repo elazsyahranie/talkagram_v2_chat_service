@@ -22,6 +22,7 @@ import { UpdateGroupParticipants } from './dto/update-group-participants.dto';
 import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.dto';
 import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
+import { DeleteGroupDto } from './dto/delete-group.dto';
 
 @Injectable()
 export class ChatsService {
@@ -603,6 +604,31 @@ export class ChatsService {
         'ChatsService',
       );
     }
+
+    return { status: 'succeeded' };
+  }
+
+  async deleteGroup(requestBody: DeleteGroupDto) {
+    this.validationService.validate(ChatValidation.DELETEGROUP, requestBody);
+
+    let { admin, room_id } = requestBody;
+    //Validate whether the user is the admin of the group or not
+    const groupAdminValidation =
+      await this.databaseService.roomParticipants.findFirst({
+        where: { room_id: room_id, user_id: admin, role: 'Admin' },
+      });
+    if (!groupAdminValidation) {
+      throw new RpcException({
+        code: 16,
+        message: 'Unauthorized',
+      });
+    }
+
+    await this.databaseService.rooms.delete({
+      where: { id: room_id },
+    });
+
+    this.logger.log(`Group ${room_id} deleted!`, 'ChatsService');
 
     return { status: 'succeeded' };
   }

@@ -69,6 +69,11 @@ export class ChatValidation {
     room_id: z.string().min(1).max(100),
   });
 
+  static readonly DELETEGROUP: ZodType = z.object({
+    admin: z.string().min(1).max(100),
+    room_id: z.string().min(1).max(100),
+  });
+
   // Custom, more permissive validation (if needed)
   // const permissiveUuid = z.string().refine((val) =>
   //   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val),
