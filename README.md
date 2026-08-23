@@ -260,4 +260,35 @@ Modules generally follow this structure:
 - `controller` — Handles HTTP requests and exposes the module's API endpoints.
 - `service` — Contains the business logic for the module.
 - `gateway` — Handles real-time communication through Socket.IO. Only used by the Chat module.
+- `dto` — Defines the data transfer objects used for validating and structuring request data.
+- `validation.ts` — Contains custom validation logic and validation rules for the module.
 - `module` — Defines the module and its dependencies.
+  
+## Error Handling [This section needs improvement]
+The Chat Service should use appropriate NestJS exceptions for predictable errors.
+
+Common errors include:
+- `BadRequestException`
+  Invalid request data.
+- `UnauthorizedException`
+  User is not authenticated.
+- `ForbiddenException`
+  User does not have permission.
+- `NotFoundException`
+  Chat or message does not exist.
+- `ConflictException`
+  Operation conflicts with existing data.
+- `InternalServerErrorException`
+  Unexpected server error.
+
+For TCP communication, errors should be transformed into appropriate NestJS RPC exceptions where necessary.
+
+Example:
+```
+throw new RpcException({
+  statusCode: 404,
+  message: 'Chat not found',
+});
+```
+
+The API Gateway can then translate the error into an appropriate HTTP response for the client.
