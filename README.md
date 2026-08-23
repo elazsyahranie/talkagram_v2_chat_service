@@ -35,19 +35,24 @@ The Chat Service communicates with the API Gateway using **NestJS TCP microservi
 
 The following message patterns define the operations that can be requested by other services.
 
-- `createRoom`
-  Currently unused
-- `chatsCreateGroup` [create group]
-- `chatsAddGroupParticipants` [add group participants] `GROUP ADMIN ONLY`
-- `chatsGetRoomsByUser` [get rooms by user]
-  A controller the data of the rooms where the user is a participant.
-- `chatsSelfUpdateGroupParticipant` [self update group participant]
-  A controller for group participants to update their own roles in the group.
-- `chatsUpdateGroupParticipants` [update group participant]
-  A controler for group admins to update other participants role in the group. `GROUP ADMIN ONLY`
-- `chatsUpdateGroup` [update group] `GROUP ADMIN ONLY`
-- `chatsSelfDeleteGroupParticipant` [self delete group participant]
-  A controller for group participants to delete themselves from the group.
-- `chatsDeleteGroupParticipants` [delete group participant] `GROUP ADMIN ONLY`
-- `chatsDeleteGroup` [delete group] `DELETE GROUP`
+- `createRoom`<br/>
+  Currently unused.
+- `chatsCreateGroup`<br/>
+  Create a group chat.
+- `chatsAddGroupParticipants`<br/>
+  Add a participant to a group. `GROUP ADMIN ONLY`.
+- `chatsGetRoomsByUser`<br/>
+  Fetch rooms where the user is a participant.
+- `chatsSelfUpdateGroupParticipant`<br/> 
+  Allow a group participant to update their own role.
+- `chatsUpdateGroupParticipants`<br/> 
+  Update other participants' role. `GROUP ADMIN ONLY`.
+- `chatsUpdateGroup`<br/> 
+  Update a group chat. `GROUP ADMIN ONLY`.
+- `chatsSelfDeleteGroupParticipant`<br/>
+  Allow a group participant to delete themselves from the group.
+- `chatsDeleteGroupParticipants`<br/>
+  Delete another participant. `GROUP ADMIN ONLY`.
+- `chatsDeleteGroup`<br/>
+  Delete a group chat. `GROUP ADMIN ONLY`.
   
