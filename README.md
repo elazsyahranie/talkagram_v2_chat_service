@@ -118,3 +118,31 @@ REDIS_PORT=
 # DATABASE_URL=
 DATABASE_URL=
 ```
+
+## Installation
+This project uses `npm` as its package manager.
+
+Install the project dependencies using:
+
+```bash
+npm install
+```
+
+or:
+
+```bash
+npm i
+```
+
+### Start the App
+
+* `npm run start` — Start the app.
+* `npm run start:dev` — Start the app in development mode.
+* `npm run start:debug` — Start the app in debug mode with file watching.
+* `npm run start:prod` — Start the app in production mode.
+
+### Test the App
+
+* `npm run test` — Run unit tests.
+* `npm run test:watch` — Run tests in watch mode.
+* `npm run test:e2e` — Run end-to-end tests.
