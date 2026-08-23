@@ -29,3 +29,25 @@ flowchart TD
     Gateway -->|TCP| Chat
     Chat -->|Chat Logic / Message Logic / SocketIO Gateway| Database
 ```
+
+## Message Patterns 
+The Chat Service communicates with the API Gateway using **NestJS TCP microservice transport**.
+
+The following message patterns define the operations that can be requested by other services.
+
+- `createRoom`
+  Currently unused
+- `chatsCreateGroup` [create group]
+- `chatsAddGroupParticipants` [add group participants] `GROUP ADMIN ONLY`
+- `chatsGetRoomsByUser` [get rooms by user]
+  A controller the data of the rooms where the user is a participant.
+- `chatsSelfUpdateGroupParticipant` [self update group participant]
+  A controller for group participants to update their own roles in the group.
+- `chatsUpdateGroupParticipants` [update group participant]
+  A controler for group admins to update other participants role in the group. `GROUP ADMIN ONLY`
+- `chatsUpdateGroup` [update group] `GROUP ADMIN ONLY`
+- `chatsSelfDeleteGroupParticipant` [self delete group participant]
+  A controller for group participants to delete themselves from the group.
+- `chatsDeleteGroupParticipants` [delete group participant] `GROUP ADMIN ONLY`
+- `chatsDeleteGroup` [delete group] `DELETE GROUP`
+  
