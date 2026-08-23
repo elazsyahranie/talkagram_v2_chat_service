@@ -56,3 +56,24 @@ The following message patterns define the operations that can be requested by ot
 - `chatsDeleteGroup`<br/>
   Delete a group chat - `GROUP ADMIN ONLY`.
   
+## Real-Time Events
+Unlike the TCP message patterns used for inter-service communication, real-time user communication is handled through SocketIO.
+
+For example:
+```mermaid
+flowchart TD
+    ClientA[Client A]
+    ChatService[Chat Service]
+    Validate[Validate message]
+    Save[Save message]
+    ChatRoom[Chat Room]
+    ClientB[Client B]
+    ClientC[Client C]
+
+    ClientA -->|sendMessage| ChatService
+    ChatService --> Validate
+    Validate --> Save
+    Save --> ChatRoom
+    ChatRoom --> ClientB
+    ChatRoom --> ClientC
+```
