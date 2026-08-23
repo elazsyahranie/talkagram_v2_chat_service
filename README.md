@@ -40,19 +40,19 @@ The following message patterns define the operations that can be requested by ot
 - `chatsCreateGroup`<br/>
   Create a group chat.
 - `chatsAddGroupParticipants`<br/>
-  Add a participant to a group. `GROUP ADMIN ONLY`.
+  Add a participant to a group - `GROUP ADMIN ONLY`.
 - `chatsGetRoomsByUser`<br/>
   Fetch rooms where the user is a participant.
 - `chatsSelfUpdateGroupParticipant`<br/> 
   Allow a group participant to update their own role.
 - `chatsUpdateGroupParticipants`<br/> 
-  Update other participants' role. `GROUP ADMIN ONLY`.
+  Update other participants' role - `GROUP ADMIN ONLY`.
 - `chatsUpdateGroup`<br/> 
-  Update a group chat. `GROUP ADMIN ONLY`.
+  Update a group chat - `GROUP ADMIN ONLY`.
 - `chatsSelfDeleteGroupParticipant`<br/>
   Allow a group participant to delete themselves from the group.
 - `chatsDeleteGroupParticipants`<br/>
-  Delete another participant. `GROUP ADMIN ONLY`.
+  Delete another participant - `GROUP ADMIN ONLY`.
 - `chatsDeleteGroup`<br/>
-  Delete a group chat. `GROUP ADMIN ONLY`.
+  Delete a group chat - `GROUP ADMIN ONLY`.
   
