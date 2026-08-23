@@ -15,3 +15,17 @@ The Chat Service is responsible for:
 - Handle Socket.IO connections independently from the API Gateway to isolate long-lived real-time connections and allow the Chat Service to scale independently
 
 The Chat Service does not directly handle client-facing HTTP requests. Requests from clients are received by the API Gateway and forwarded to the Chat Service through TCP.
+
+```mermaid
+flowchart TD
+    Client[Authorized Client]
+    Gateway[API Gateway]
+    Chat[Chat Service]
+    Database[Database]
+
+    Client -->|HTTP| Gateway
+    Client -->|SocketIO| Chat
+ 
+    Gateway -->|TCP| Chat
+    Chat -->|Chat Logic / Message Logic / SocketIO Gateway| Database
+```
