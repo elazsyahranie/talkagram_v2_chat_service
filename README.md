@@ -135,14 +135,121 @@ npm i
 ```
 
 ### Start the App
-
 * `npm run start` — Start the app.
 * `npm run start:dev` — Start the app in development mode.
 * `npm run start:debug` — Start the app in debug mode with file watching.
 * `npm run start:prod` — Start the app in production mode.
 
 ### Test the App
-
 * `npm run test` — Run unit tests.
 * `npm run test:watch` — Run tests in watch mode.
 * `npm run test:e2e` — Run end-to-end tests.
+
+## Project Structure 
+```
+├── README.md
+├── blabla.ts
+├── eslint.config.mjs
+├── generated
+│   └── prisma
+│       ├── browser.ts
+│       ├── client.ts
+│       ├── commonInputTypes.ts
+│       ├── enums.ts
+│       ├── internal
+│       │   ├── class.ts
+│       │   ├── prismaNamespace.ts
+│       │   └── prismaNamespaceBrowser.ts
+│       ├── models
+│       │   └── Employee.ts
+│       ├── models.ts
+│       └── query_engine-windows.dll.node
+├── logs
+│   ├── app.log
+│   └── myLogFile.log
+├── nest-cli.json
+├── package-lock.json
+├── package.json
+├── prisma
+│   ├── migrations
+│   │   ├── 20260609130134_create_tables
+│   │   │   └── migration.sql
+│   │   ├── 20260609141204_add_table_chats
+│   │   │   └── migration.sql
+│   │   ├── 20260612122630_alter_table_chats_add_room_constraint
+│   │   │   └── migration.sql
+│   │   ├── 20260630071936_alter_table_rooms_add_check_constraint
+│   │   │   └── migration.sql
+│   │   ├── 20260630074900_alter_table_rooms_add_column_user_id_key
+│   │   │   └── migration.sql
+│   │   ├── 20260702131536_alter_table_chats_no_room_participants_fk
+│   │   │   └── migration.sql
+│   │   ├── 20260702141634_create_reference_constraint_rooms_and_chats
+│   │   │   └── migration.sql
+│   │   ├── 20260706100456_alter_table_rooms_add_last_activity_at
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── prisma.config.ts
+├── src
+│   ├── app.controller.spec.ts
+│   ├── app.controller.ts
+│   ├── app.module.ts
+│   ├── app.service.ts
+│   ├── auth
+│   │   ├── auth.controller.spec.ts
+│   │   ├── auth.controller.ts
+│   │   ├── auth.guard.ts
+│   │   ├── auth.module.ts
+│   │   ├── authentication.guard.ts
+│   │   ├── issuperadmin.guard.ts
+│   │   └── wsauth.guard.ts
+│   ├── chats
+│   │   ├── chats.controller.ts
+│   │   ├── chats.gateway.ts
+│   │   ├── chats.module.ts
+│   │   ├── chats.service.ts
+│   │   ├── chats.validation.ts
+│   │   └── dto
+│   │       ├── add-group-participants.dto.ts
+│   │       ├── add-participants.dto.ts
+│   │       ├── create-group.dto.ts
+│   │       ├── create-room.dto.ts
+│   │       ├── delete-group-participants.dto.ts
+│   │       ├── delete-group.dto.ts
+│   │       ├── get-rooms-result.dto.ts
+│   │       ├── self-delete-group-participant.dto.ts
+│   │       ├── self-update-group-participant.dto.ts
+│   │       ├── send-message.dto.ts
+│   │       ├── update-group-participants.dto.ts
+│   │       └── update-group.dto.ts
+│   ├── common
+│   │   ├── common.module.ts
+│   │   ├── error.filter.ts
+│   │   ├── exceptions.filter.ts
+│   │   ├── grpc-exceptions.filter.ts
+│   │   └── validation.service.ts
+│   ├── database
+│   │   ├── database.module.ts
+│   │   ├── database.service.spec.ts
+│   │   └── database.service.ts
+│   ├── decorators
+│   │   └── public.decorator.ts
+│   ├── file-upload.util.ts
+│   ├── logger
+│   │   ├── winston.config.ts
+│   │   └── winston.module.ts
+│   ├── main.ts
+│   ├── my-logger
+│   │   ├── my-logger.module.ts
+│   │   ├── my-logger.service.spec.ts
+│   │   └── my-logger.service.ts
+│   └── redis.module.ts
+├── test
+│   ├── app.e2e-spec.ts
+│   └── jest-e2e.json
+├── tsconfig.build.json
+├── tsconfig.json
+└── uploads
+    └── images
+```
