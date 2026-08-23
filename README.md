@@ -264,22 +264,23 @@ Modules generally follow this structure:
 - `validation.ts` — Contains custom validation logic and validation rules for the module.
 - `module` — Defines the module and its dependencies.
   
-## Error Handling [This section needs improvement]
-The Chat Service should use appropriate NestJS exceptions for predictable errors.
+## Error Handling 
+The application uses centralized error handling for consistent error responses across services. The custom `RpcException` implementation is located at `src/common/grpc-exceptions.filter.ts`
 
 Common errors include:
-- `BadRequestException`
-  Invalid request data.
-- `UnauthorizedException`
-  User is not authenticated.
-- `ForbiddenException`
-  User does not have permission.
-- `NotFoundException`
-  Chat or message does not exist.
-- `ConflictException`
-  Operation conflicts with existing data.
-- `InternalServerErrorException`
-  Unexpected server error.
+- `RpcException` — Handles errors in inter-service communication using gRPC status codes.
+- `PrismaClientValidationError` — Handles validation errors raised by Prisma.
+- `ZodError` — Handles schema validation errors.
+- `InternalServerError` — Handles unexpected internal server errors.
+
+#### gRPC Status Code Mapping
+
+| gRPC Code | Status | HTTP Status |
+|---:|---|---:|
+| `3` | `INVALID_ARGUMENT` | `400 Bad Request` |
+| `5` | `NOT_FOUND` | `404 Not Found` |
+| `10` | `ABORTED` | `401 Unauthorized` |
+| `16` | `UNAUTHENTICATED` | `401 Unauthorized` |
 
 For TCP communication, errors should be transformed into appropriate NestJS RPC exceptions where necessary.
 
