@@ -253,3 +253,11 @@ npm i
 └── uploads
     └── images
 ```
+
+## Typical Module Structure
+Modules generally follow this structure:
+
+- `controller` — Handles HTTP requests and exposes the module's API endpoints.
+- `service` — Contains the business logic for the module.
+- `gateway` — Handles real-time communication through Socket.IO. Only used by the Chat module.
+- `module` — Defines the module and its dependencies.
