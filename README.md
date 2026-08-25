@@ -347,8 +347,8 @@ chatsGetRoomsByUser
 CHATSSELFUPDATEGROUPPARTICIPANT
 ```
 
-### 4. Keep WebSocket Logic Separate From TCP Logic
-TCP communication is primarily for service-to-service communication, while WebSocket is for real-time client communication.
+### 4. Keep SocketIO Logic Separate From TCP Logic
+TCP communication is primarily for service-to-service communication, while SocketIO is for real-time client communication.
 
 Keeping these responsibilities separate makes the architecture easier to maintain.
 
