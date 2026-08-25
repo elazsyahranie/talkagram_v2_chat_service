@@ -309,7 +309,7 @@ flowchart TD
 Avoid putting business logic directly inside controllers or gateways.
 
 ### 2. Use Zod for Validation
-All incoming data is validated using Zod schemas. DTOs are used primarily to provide the structure expected by NestJS and TypeScript and are not currently responsible for returning validation errors. [IMPROVE HERE]
+All incoming data is validated using Zod schemas. DTOs are used primarily to provide the structure expected by NestJS and TypeScript and are **not currently responsible for returning validation errors**.
 
 Example:
 ```
@@ -329,6 +329,8 @@ export class AddGroupParticipants {
   participants: ParticipantDto[];
 }
 ```
+
+Do not rely on DTO validation for request validation. Use the corresponding Zod schema when validating incoming data.
 
 ### 3. Keep TCP Message Patterns Consistent
 Message patterns should follow a consistent naming convention.
