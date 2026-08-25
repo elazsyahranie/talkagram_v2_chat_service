@@ -358,3 +358,44 @@ Keeping these responsibilities separate makes the architecture easier to maintai
 The Chat Service should own its chat-related data.
 
 Other services should communicate through the Chat Service rather than directly querying its database.
+
+## Production Considerations 
+### TCP Communication
+The Chat Service should not rely on localhost in production.
+
+For example:
+```
+TCP_HOST=chat-service
+TCP_PORT=4001
+```
+When deployed using Docker/Kubernetes, the service should communicate through the internal service network.
+
+### Database
+The database should be properly configured for production workloads.
+
+Consider:
+- Connection pooling
+- Database indexes
+- Query optimization
+- Transaction handling
+- Backups
+- Migration management
+
+### Authentication
+JWT secrets and other credentials should **never be committed to the repository**.
+
+Production secrets should be provided through environment variables or a dedicated secrets-management system.
+
+### Logging
+The service should provide structured logs for important events such as:
+
+- TCP requests
+- SocketIO connections
+- SocketIO disconnections
+- Message creation
+- Database errors
+- Authentication failures
+- Unexpected exceptions
+
+### Health Checks
+A production deployment should expose a health-check mechanism so that the deployment platform can determine whether the Chat Service is healthy.
