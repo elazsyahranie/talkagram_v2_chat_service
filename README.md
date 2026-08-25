@@ -382,6 +382,8 @@ For example:
 TCP_HOST=chat-service
 TCP_PORT=4001
 ```
+***Note**: The ports shown above may differ from those specified in the original environment configuration, depending on the deployment environment.*
+
 When deployed using Docker/Kubernetes, the service should communicate through the internal service network.
 
 ### Database
