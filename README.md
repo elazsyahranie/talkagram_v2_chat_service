@@ -274,7 +274,6 @@ Common errors include:
 - `InternalServerError` — Handles unexpected internal server errors.
 
 #### gRPC Status Code Mapping
-
 | gRPC Code | Status | HTTP Status |
 |---:|---|---:|
 | `3` | `INVALID_ARGUMENT` | `400 Bad Request` |
@@ -293,3 +292,67 @@ throw new RpcException({
 ```
 
 The API Gateway can then translate the error into an appropriate HTTP response for the client.
+
+## Development Guidelines 
+### 1. Keep Business Logic Inside Services
+Controllers and gateways should primarily handle communication.
+```mermaid
+flowchart TD
+    Controller[Controller]
+    Service[Service]
+    Repository[Repository]
+
+    Controller --> Service
+    Service --> Repository
+```
+
+Avoid putting business logic directly inside controllers or gateways.
+
+### 2. Use Zod for Validation
+All incoming data is validated using Zod schemas. DTOs are used primarily to provide the structure expected by NestJS and TypeScript and are not currently responsible for returning validation errors. [IMPROVE HERE]
+
+Example:
+```
+export class AddGroupParticipants {
+  @IsString()
+  @IsNotEmpty()
+  admin: string;
+
+  @IsString()
+  @IsNotEmpty()
+  room_id: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ParticipantDto)
+  @ArrayMinSize(1)
+  participants: ParticipantDto[];
+}
+```
+
+### 3. Keep TCP Message Patterns Consistent
+Message patterns should follow a consistent naming convention.
+
+For example:
+```
+chatsAddGroupParticipants
+chatsGetRoomsByUser
+chatsSelfUpdateGroupParticipant
+```
+
+Avoid having inconsistent patterns such as:
+```
+chats_addGoupParticpants
+chatsGetRoomsByUser
+CHATSSELFUPDATEGROUPPARTICIPANT
+```
+
+### 4. Keep WebSocket Logic Separate From TCP Logic
+TCP communication is primarily for service-to-service communication, while WebSocket is for real-time client communication.
+
+Keeping these responsibilities separate makes the architecture easier to maintain.
+
+### 5. Avoid Direct Database Access From Other Services
+The Chat Service should own its chat-related data.
+
+Other services should communicate through the Chat Service rather than directly querying its database.
