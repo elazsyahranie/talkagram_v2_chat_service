@@ -360,6 +360,20 @@ The Chat Service should own its chat-related data.
 Other services should communicate through the Chat Service rather than directly querying its database.
 
 ## Production Considerations 
+### Socket.IO Scaling
+If multiple Chat Service instances are running (horizontal scaling), Socket.IO connections may be distributed across different instances.
+
+A shared messaging mechanism such as the Socket.IO Redis adapter may be required to synchronize events between instances.
+
+```mermaid
+flowchart TD
+    LoadBalancer[Load Balancer]
+    Redis[Redis]
+
+    LoadBalancer -->|Chat Service #1| Redis
+    LoadBalancer -->|Chat Service #2| Redis
+```
+
 ### TCP Communication
 The Chat Service should not rely on localhost in production.
 
