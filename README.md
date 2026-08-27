@@ -8,11 +8,11 @@ The Chat Service is responsible for:
 
 - Manage chat rooms and participants
 - Manage chat messages
-- Handle Socket.IO connections and real-time communication
-- Handle Socket.IO events such as joining rooms, sending messages, and leaving rooms
+- Handle .IO connections and real-time communication
+- Handle [Socket.io](https://github.com/socketio/socket.IO) events such as joining rooms, sending messages, and leaving rooms
 - Persist chat-related data
 - Communicate with the API Gateway through NestJS TCP
-- Handle Socket.IO connections independently from the API Gateway to isolate long-lived real-time connections and allow the Chat Service to scale independently
+- Handle [Socket.io](https://github.com/socketio/socket.IO) connections independently from the API Gateway to isolate long-lived real-time connections and allow the Chat Service to scale independently
 
 The Chat Service does not directly handle client-facing HTTP requests. Requests from clients are received by the API Gateway and forwarded to the Chat Service through TCP.
 
@@ -259,7 +259,7 @@ Modules generally follow this structure:
 
 - `controller` — Handles HTTP requests and exposes the module's API endpoints.
 - `service` — Contains the business logic for the module.
-- `gateway` — Handles real-time communication through Socket.IO. Only used by the Chat module.
+- `gateway` — Handles real-time communication through [Socket.io](https://github.com/socketio/socket.IO). Only used by the Chat module.
 - `dto` — Defines the data transfer objects used for validating and structuring request data.
 - `validation.ts` — Contains custom validation logic and validation rules for the module.
 - `module` — Defines the module and its dependencies.
@@ -360,10 +360,10 @@ The Chat Service should own its chat-related data.
 Other services should communicate through the Chat Service rather than directly querying its database.
 
 ## Production Considerations 
-### Socket.IO Scaling
-If multiple Chat Service instances are running (horizontal scaling), Socket.IO connections may be distributed across different instances.
+### Socket.io Scaling
+If multiple Chat Service instances are running (horizontal scaling), [Socket.io](https://github.com/socketio/socket.IO) connections may be distributed across different instances.
 
-A shared messaging mechanism such as the Socket.IO Redis adapter may be required to synchronize events between instances.
+A shared messaging mechanism such as the [Socket.io](https://github.com/socketio/socket.IO) Redis adapter may be required to synchronize events between instances.
 
 ```mermaid
 flowchart TD
