@@ -79,7 +79,7 @@ flowchart TD
 ```
 
 ## Enviromental Variables 
-Each service contains its environment variables in a .env file. The .env file should be included in .gitignore, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
+Each service contains its environment variables in a .env file. The .env file should be included in `.gitignore`, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
 
 The Chat Service .env file contains the following variables:
 ```
