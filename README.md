@@ -301,10 +301,10 @@ Consider:
 - Backups
 - Migration management
 
-### Authentication
-JWT secrets and other credentials should **never be committed to the repository**.
+### Secrets Management
+Sensitive credentials such as JWT secrets, API keys, database credentials, and other secrets should never be committed to the repository.
 
-Production secrets should be provided through environment variables or a dedicated secrets-management system.
+In production, secrets should be provided through environment variables or a dedicated secrets-management system. Credentials should also be rotated periodically and granted only the permissions required by the service.
 
 ### Logging
 The service should provide structured logs for important events such as:
