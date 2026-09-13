@@ -79,9 +79,9 @@ flowchart TD
 ```
 
 ## Enviromental Variables 
-Each service contains its environment variables in a .env file. The .env file should be included in `.gitignore`, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
+Each service contains its environment variables in a `.env` file. The `.env` file should be included in `.gitignore`, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
 
-The Chat Service .env file contains the following variables:
+The Chat Service `.env` file contains the following variables:
 ```
 PORT=
 GATEWAY=
@@ -191,10 +191,10 @@ Controllers and gateways should primarily handle communication.
 flowchart TD
     Controller[Controller]
     Service[Service]
-    Repository[Repository]
+    Database[Database]
 
     Controller --> Service
-    Service --> Repository
+    Service --> Database
 ```
 
 Avoid putting business logic directly inside controllers or gateways.
