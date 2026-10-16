@@ -54,5 +54,6 @@ model Chats {
   updatedAt       DateTime             @updatedAt
   room_id         String               @db.VarChar(255)
   room            Rooms                @relation(fields: [room_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  type            String?              @db.VarChar(255)
   latestChatInRoom   Rooms[]           @relation("LatestChat")
 }
