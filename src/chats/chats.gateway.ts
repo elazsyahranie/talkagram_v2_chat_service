@@ -12,10 +12,13 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatsService } from './chats.service';
 import { JwtService } from '@nestjs/jwt';
-import { CreateRoomDto } from './dto/create-room.dto';
+import { ValidationService } from '../common/validation.service';
+// import { CreateRoomDto } from './dto/create-room.dto';
 import { sendMessageDto } from './dto/send-message.dto';
 import { v4 as uuidv4 } from 'uuid';
-
+import { ChatValidation } from './chats.validation';
+import { CHAT_TYPE } from 'src/common/constants/app.constants';
+import { MediaClient } from './client/media.client';
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -31,7 +34,10 @@ import { v4 as uuidv4 } from 'uuid';
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Constructor is usually used for dependency injections
   constructor(
+    // private readonly chatsController: ChatsController,
     private readonly chatsService: ChatsService,
+    private readonly mediaClient: MediaClient,
+    private validationService: ValidationService,
     private jwtService: JwtService,
   ) {}
   // Class property
@@ -112,9 +118,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   //   // throw new WsException('Invalid data');
   // }
 
-  /* 
-    1) Pastikan agar `const roomParticipants` nya menjadi `class property` aga bisa diakses lebih mudah
-  */
   @SubscribeMessage('joinRoom')
   handleJoinRoom(
     @MessageBody() data: { room: string; receiver: string },
@@ -134,7 +137,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('sendPersonalMessage')
   async handlePersonalMessage(
-    @MessageBody() data: { receiver: string; message: string },
+    @MessageBody()
+    data: {
+      receiver: string;
+      message: string;
+      type: string;
+      file_ids: string[];
+    },
     @ConnectedSocket() client: Socket,
   ) {
     /* 
@@ -148,7 +157,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     /* The ID of user extracted from the token */
     const userId: string = client.data.user.id;
-    const { receiver, message } = data;
+    const { receiver, message, type, file_ids } = data;
 
     // This function returns the room ID
     /* 
@@ -166,8 +175,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     client.join(room_id);
     console.log(`${userId} and ${receiver} has joined the room ${room_id}`);
 
+    const recordMessageBody = {
+      room: room_id,
+      sender: userId,
+      chat: message,
+      type,
+    };
+
+    this.validationService.validate(ChatValidation.ADDCHAT, {
+      ...recordMessageBody,
+      file_ids,
+    });
+
     this.server.to(room_id).emit('sendPersonalMessage', message);
-    await this.chatsService.addPersonalChat(room_id, userId, message);
+    const addChat = await this.chatsService.addChat(recordMessageBody);
+    if (type === CHAT_TYPE[1] && file_ids.length) {
+      await this.mediaClient.associateFilesWithChats(file_ids, addChat.chat_id);
+    }
 
     // Notify the users about the new messages
     this.server.to(`user:${receiver}`).emit('newNotification', message);

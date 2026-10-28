@@ -1,4 +1,5 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, IsEnum } from 'class-validator';
+import { CHAT_TYPE, INVALID_INPUT } from 'src/common/constants/app.constants';
 
 export class AddChatDto {
   @IsString()
@@ -11,4 +12,11 @@ export class AddChatDto {
 
   @IsString()
   chat: string;
+
+  @IsEnum(CHAT_TYPE, {
+    message: INVALID_INPUT,
+  })
+  @IsNotEmpty()
+  @IsString()
+  type: string;
 }

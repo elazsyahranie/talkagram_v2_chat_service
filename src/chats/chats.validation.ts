@@ -1,3 +1,4 @@
+import { CHAT_TYPE, INVALID_INPUT } from 'src/common/constants/app.constants';
 import { z, ZodType } from 'zod';
 
 export class ChatValidation {
@@ -7,6 +8,16 @@ export class ChatValidation {
       .array(z.string())
       .min(2, 'At least two participants are needed'),
     about: z.string().min(1).max(100).optional(),
+  });
+
+  static readonly ADDCHAT: ZodType = z.object({
+    room: z.string().min(1).max(100),
+    sender: z.string().min(1).max(100),
+    chat: z.string().min(1).optional(),
+    type: z.literal(CHAT_TYPE, {
+      error: (iss) => (iss.input === undefined ? INVALID_INPUT : null),
+    }),
+    file_ids: z.array(z.string()).optional(),
   });
 
   static readonly PARTICIPANTS: ZodType = z.object({

@@ -23,6 +23,7 @@ import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.
 import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
 import { DeleteGroupDto } from './dto/delete-group.dto';
+import { AddChatDto } from './dto/add-chat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -236,20 +237,9 @@ export class ChatsService {
   }
 
   // Tambahkan logic untuk menyimpan chat pada database
-  async addPersonalChat(
-    room: string,
-    sender: string,
-    chat: string,
-  ): Promise<string> {
+  async addChat(requestBody: AddChatDto): Promise<{ chat_id: string }> {
     const chat_id = uuidv4();
-    // await this.databaseService.chats.create({
-    //   data: {
-    //     id: chat_id,
-    //     chat,
-    //     sender,
-    //     room_id: room,
-    //   },
-    // });
+    const { room, sender, chat, type } = requestBody;
     const createdAt = new Date();
 
     await this.databaseService.$transaction([
@@ -260,6 +250,7 @@ export class ChatsService {
           sender,
           room_id: room,
           createdAt,
+          type,
         },
       }),
       this.databaseService.rooms.update({
@@ -268,7 +259,7 @@ export class ChatsService {
       }),
     ]);
 
-    return 'success';
+    return { chat_id };
   }
 
   async getRoomsByUser(

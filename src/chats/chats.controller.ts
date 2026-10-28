@@ -23,12 +23,13 @@ import { SelfUpdateGroupParticipant } from './dto/self-update-group-participant.
 import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
 import { DeleteGroupDto } from './dto/delete-group.dto';
+import { AddChatDto } from './dto/add-chat.dto';
 
 @Controller('chats')
 export class ChatsController {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: Logger,
+    // private readonly logger: Logger,
     private readonly chatsService: ChatsService,
   ) {}
 
@@ -39,6 +40,10 @@ export class ChatsController {
   async createGroup(@Body() requestBody: CreateGroupDto) {
     const result = await this.chatsService.createGroup(requestBody);
     return result;
+  }
+
+  async addChat(@Body() requestBody: AddChatDto) {
+    await this.chatsService.addChat(requestBody);
   }
 
   @MessagePattern({ cmd: 'chatsAddGroupParticipants' })
