@@ -78,6 +78,18 @@ flowchart TD
     ChatRoom --> ClientC
 ```
 
+### File Attachments
+Currently, the file attachment process works as follows:
+
+1. The client first uploads the selected files to the `media-service`.
+2. Once the upload is complete, the `media-service` returns the IDs of the uploaded files to the client.
+3. The client sends the chat message to the Socket.IO server along with the corresponding file IDs.
+4. The `chat-service` then communicates with the `media-service`, providing the chat ID and the associated file IDs to link the uploaded files to the chat.
+
+This approach separates file uploads from message delivery, allowing the client to upload files independently before attaching them to a chat message.
+
+> **Future Improvements:** An alternative file attachment workflow is planned, allowing file uploads and chat message delivery to happen concurrently. The implementation details are subject to change.
+
 ## Enviromental Variables 
 Each service contains its environment variables in a `.env` file. The `.env` file should be included in `.gitignore`, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
 
