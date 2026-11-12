@@ -1,9 +1,11 @@
-# Chat Service 
-🚧 ***This service is currently under development.** Its architecture, APIs, features, and implementation details may change as development progresses.*
+# Chat Service
+
+🚧 **\*This service is currently under development.** Its architecture, APIs, features, and implementation details may change as development progresses.\*
 
 The Chat Service is responsible for managing chat-related functionality within the application. It communicates with the API Gateway through NestJS TCP transport and handles chat rooms, messages, and real-time communication between connected users using the [Socket.io](https://github.com/socketio/socket.IO).
 
-## Responsibilities 
+## Responsibilities
+
 The Chat Service is responsible for:
 
 - Manage chat rooms and participants
@@ -25,12 +27,13 @@ flowchart TD
 
     Client -->|HTTP| Gateway
     Client -->|SocketIO| Chat
- 
+
     Gateway -->|TCP| Chat
     Chat -->|Chat Logic / Message Logic / SocketIO Gateway| Database
 ```
 
-## Message Patterns 
+## Message Patterns
+
 The Chat Service communicates with the API Gateway using **NestJS TCP microservice transport**.
 
 The following message patterns define the operations that can be requested by other services.
@@ -43,11 +46,11 @@ The following message patterns define the operations that can be requested by ot
   Add a participant to a group - `GROUP ADMIN ONLY`.
 - `chatsGetRoomsByUser`<br/>
   Fetch rooms where the user is a participant.
-- `chatsSelfUpdateGroupParticipant`<br/> 
+- `chatsSelfUpdateGroupParticipant`<br/>
   Allow a group participant to update their own role.
-- `chatsUpdateGroupParticipants`<br/> 
+- `chatsUpdateGroupParticipants`<br/>
   Update other participants' role - `GROUP ADMIN ONLY`.
-- `chatsUpdateGroup`<br/> 
+- `chatsUpdateGroup`<br/>
   Update a group chat - `GROUP ADMIN ONLY`.
 - `chatsSelfDeleteGroupParticipant`<br/>
   Allow a group participant to delete themselves from the group.
@@ -55,11 +58,13 @@ The following message patterns define the operations that can be requested by ot
   Delete another participant - `GROUP ADMIN ONLY`.
 - `chatsDeleteGroup`<br/>
   Delete a group chat - `GROUP ADMIN ONLY`.
-  
+
 ## Real-Time Events
+
 Unlike the TCP message patterns used for inter-service communication, real-time user communication is handled through SocketIO.
 
 For example:
+
 ```mermaid
 flowchart TD
     ClientA[Client A]
@@ -79,7 +84,19 @@ flowchart TD
 ```
 
 ### File Attachments
+
 Currently, the file attachment process works as follows:
+
+```mermaid
+flowchart TD
+    ClientA[Client A]
+    MediaService[Media Service]
+
+    ClientA -->|1. Upload files| MediaService
+    MediaService --> |2. Return IDs| ClientA
+    ClientA -->|3. Send chat messages + file IDs| ChatService
+    ChatService --> |4. Associate file IDs with the chat ID| MediaService
+```
 
 1. The client first uploads the selected files to the `media-service`.
 2. Once the upload is complete, the `media-service` returns the IDs of the uploaded files to the client.
@@ -90,10 +107,12 @@ This approach separates file uploads from message delivery, allowing the client 
 
 > **Future Improvements:** An alternative file attachment workflow is planned, allowing file uploads and chat message delivery to happen concurrently. The implementation details are subject to change.
 
-## Enviromental Variables 
+## Enviromental Variables
+
 Each service contains its environment variables in a `.env` file. The `.env` file should be included in `.gitignore`, especially when the repository is public, to prevent sensitive information or credentials from being exposed.
 
 The Chat Service `.env` file contains the following variables:
+
 ```
 PORT=
 GATEWAY=
@@ -123,8 +142,8 @@ REDIS_PORT=
 # Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
 # See the documentation for all the connection string options: https://pris.ly/d/connection-strings
 
-# The following `prisma+postgres` URL is similar to the URL produced by running a local Prisma Postgres 
-# server with the `prisma dev` CLI command, when not choosing any non-default ports or settings. The API key, unlike the 
+# The following `prisma+postgres` URL is similar to the URL produced by running a local Prisma Postgres
+# server with the `prisma dev` CLI command, when not choosing any non-default ports or settings. The API key, unlike the
 # one found in a remote Prisma Postgres URL, does not contain any sensitive information.
 
 # DATABASE_URL=
@@ -132,6 +151,7 @@ DATABASE_URL=
 ```
 
 ## Installation
+
 This project uses `npm` as its package manager.
 
 Install the project dependencies using:
@@ -147,17 +167,20 @@ npm i
 ```
 
 ### Start the App
-* `npm run start` — Start the app.
-* `npm run start:dev` — Start the app in development mode.
-* `npm run start:debug` — Start the app in debug mode with file watching.
-* `npm run start:prod` — Start the app in production mode.
+
+- `npm run start` — Start the app.
+- `npm run start:dev` — Start the app in development mode.
+- `npm run start:debug` — Start the app in debug mode with file watching.
+- `npm run start:prod` — Start the app in production mode.
 
 ### Test the App
-* `npm run test` — Run unit tests.
-* `npm run test:watch` — Run tests in watch mode.
-* `npm run test:e2e` — Run end-to-end tests.
+
+- `npm run test` — Run unit tests.
+- `npm run test:watch` — Run tests in watch mode.
+- `npm run test:e2e` — Run end-to-end tests.
 
 ## Typical Module Structure
+
 Modules generally follow this structure:
 
 - `controller` — Handles HTTP requests and exposes the module's API endpoints.
@@ -166,27 +189,31 @@ Modules generally follow this structure:
 - `dto` — Defines the data transfer objects used for validating and structuring request data.
 - `validation.ts` — Contains custom validation logic and validation rules for the module.
 - `module` — Defines the module and its dependencies.
-  
-## Error Handling 
+
+## Error Handling
+
 The application uses centralized error handling for consistent error responses across services. The custom `RpcException` implementation is located at `src/common/grpc-exceptions.filter.ts`
 
 Common errors include:
+
 - `RpcException` — Handles errors in inter-service communication using gRPC status codes.
 - `PrismaClientValidationError` — Handles validation errors raised by Prisma.
 - `ZodError` — Handles schema validation errors.
 - `InternalServerError` — Handles unexpected internal server errors.
 
 #### gRPC Status Code Mapping
-| gRPC Code | Status | HTTP Status |
-|---:|---|---:|
-| `3` | `INVALID_ARGUMENT` | `400 Bad Request` |
-| `5` | `NOT_FOUND` | `404 Not Found` |
-| `10` | `ABORTED` | `401 Unauthorized` |
-| `16` | `UNAUTHENTICATED` | `401 Unauthorized` |
+
+| gRPC Code | Status             |        HTTP Status |
+| --------: | ------------------ | -----------------: |
+|       `3` | `INVALID_ARGUMENT` |  `400 Bad Request` |
+|       `5` | `NOT_FOUND`        |    `404 Not Found` |
+|      `10` | `ABORTED`          | `401 Unauthorized` |
+|      `16` | `UNAUTHENTICATED`  | `401 Unauthorized` |
 
 For TCP communication, errors should be transformed into appropriate NestJS RPC exceptions where necessary.
 
 Example:
+
 ```
 throw new RpcException({
   statusCode: 404,
@@ -196,9 +223,12 @@ throw new RpcException({
 
 The API Gateway can then translate the error into an appropriate HTTP response for the client.
 
-## Development Guidelines 
+## Development Guidelines
+
 ### 1. Keep Business Logic Inside Services
+
 Controllers and gateways should primarily handle communication.
+
 ```mermaid
 flowchart TD
     Controller[Controller]
@@ -212,9 +242,11 @@ flowchart TD
 Avoid putting business logic directly inside controllers or gateways.
 
 ### 2. Use Zod for Validation
+
 All incoming data is validated using Zod schemas. DTOs are used primarily to provide the structure expected by NestJS and TypeScript and are **not currently responsible for returning validation errors**.
 
 Example of a DTO Validation:
+
 ```
 export class AddGroupParticipants {
   @IsString()
@@ -234,6 +266,7 @@ export class AddGroupParticipants {
 ```
 
 Example of a Zod Validation:
+
 ```
   static readonly ADDGROUPPARTICIPANTS: ZodType = z.object({
     admin: z.string().min(1).max(100),
@@ -249,9 +282,11 @@ Example of a Zod Validation:
 Do not rely on DTO validation for request validation. Use the corresponding Zod schema when validating incoming data.
 
 ### 3. Keep TCP Message Patterns Consistent
+
 Message patterns should follow a consistent naming convention.
 
 For example:
+
 ```
 chatsAddGroupParticipants
 chatsGetRoomsByUser
@@ -259,6 +294,7 @@ chatsSelfUpdateGroupParticipant
 ```
 
 Avoid having inconsistent patterns such as:
+
 ```
 chats_addGoupParticpants
 chatsGetRoomsByUser
@@ -266,17 +302,21 @@ CHATSSELFUPDATEGROUPPARTICIPANT
 ```
 
 ### 4. Keep SocketIO Logic Separate From TCP Logic
+
 TCP communication is primarily for service-to-service communication, while SocketIO is for real-time client communication.
 
 Keeping these responsibilities separate makes the architecture easier to maintain.
 
 ### 5. Avoid Direct Database Access From Other Services
+
 The Chat Service should own its chat-related data.
 
 Other services should communicate through the Chat Service rather than directly querying its database.
 
-## Production Considerations 
+## Production Considerations
+
 ### Socket.io Scaling
+
 If multiple Chat Service instances are running (horizontal scaling), [Socket.io](https://github.com/socketio/socket.IO) connections may be distributed across different instances.
 
 A shared messaging mechanism such as the [Socket.io](https://github.com/socketio/socket.IO) Redis adapter may be required to synchronize events between instances.
@@ -291,21 +331,26 @@ flowchart TD
 ```
 
 ### TCP Communication
+
 The Chat Service should not rely on localhost in production.
 
 For example:
+
 ```
 TCP_HOST=chat-service
 TCP_PORT=4001
 ```
-***Note**: The ports shown above may differ from those specified in the original environment configuration, depending on the deployment environment.*
+
+**\*Note**: The ports shown above may differ from those specified in the original environment configuration, depending on the deployment environment.\*
 
 When deployed using Docker/Kubernetes, the service should communicate through the internal service network.
 
 ### Database
+
 The database should be properly configured for production workloads.
 
 Consider:
+
 - Connection pooling
 - Database indexes
 - Query optimization
@@ -314,11 +359,13 @@ Consider:
 - Migration management
 
 ### Secrets Management
+
 Sensitive credentials such as JWT secrets, API keys, database credentials, and other secrets should never be committed to the repository.
 
 In production, secrets should be provided through environment variables or a dedicated secrets-management system. Credentials should also be rotated periodically and granted only the permissions required by the service.
 
 ### Logging
+
 The service should provide structured logs for important events such as:
 
 - TCP requests
@@ -330,4 +377,5 @@ The service should provide structured logs for important events such as:
 - Unexpected exceptions
 
 ### Health Checks
+
 A production deployment should expose a health-check mechanism so that the deployment platform can determine whether the Chat Service is healthy.
