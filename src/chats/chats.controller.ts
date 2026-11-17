@@ -9,6 +9,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import {
   MessagePattern,
+  Payload,
   // ClientProxy
 } from '@nestjs/microservices';
 import { ChatsService } from './chats.service';
@@ -24,6 +25,8 @@ import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
 import { DeleteGroupDto } from './dto/delete-group.dto';
 import { AddChatDto } from './dto/add-chat.dto';
+import { GetRoomByIdDto } from './dto/get-room-by-id.dto';
+import { SUCCESS } from 'src/common/constants/app.constants';
 
 @Controller('chats')
 export class ChatsController {
@@ -73,6 +76,11 @@ export class ChatsController {
       limit,
     );
     return result;
+  }
+
+  @MessagePattern({ cmd: 'chatsGetRoomById' })
+  async getRoomById(@Body() body: GetRoomByIdDto) {
+    return { status: SUCCESS, data: { ...body } };
   }
 
   @MessagePattern({ cmd: 'chatsSelfUpdateGroupParticipant' })
