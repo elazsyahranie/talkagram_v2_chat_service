@@ -32,6 +32,11 @@ dotenv.config();
     ]),
   ],
   controllers: [ChatsController],
-  providers: [ChatsModule, ChatsService, ChatGateway, MediaClient],
+  providers: [
+    // ChatsModule,
+    ChatsService,
+    ChatGateway,
+    MediaClient,
+  ],
 })
 export class ChatsModule {}
