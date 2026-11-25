@@ -65,10 +65,6 @@ export class ChatsController {
     },
   ): Promise<GetRoomsResult> {
     const { user, order, page, limit } = body;
-    // console.dir(body, { depth: null });
-    console.log('-Chats Controller-');
-    console.log('-getRoomsByUserId-');
-    console.dir(body, { depth: null });
     const result = await this.chatsService.getRoomsByUser(
       user,
       order,
