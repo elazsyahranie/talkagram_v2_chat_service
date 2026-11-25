@@ -24,6 +24,8 @@ import { DeleteGroupParticipants } from './dto/delete-group-participants.dto';
 import { SelfDeleteGroupParticipant } from './dto/self-delete-group-participant.dto';
 import { DeleteGroupDto } from './dto/delete-group.dto';
 import { AddChatDto } from './dto/add-chat.dto';
+import { GetRoomByIdDto } from './dto/get-room-by-id.dto';
+import { NOT_FOUND } from 'src/common/constants/app.constants';
 
 @Injectable()
 export class ChatsService {
@@ -348,6 +350,67 @@ export class ChatsService {
     });
 
     return { totalData, totalPage, page, data: finalResult };
+  }
+
+  async getRoomById(body: GetRoomByIdDto) {
+    const { room_id, sender_id, order, limit, page } = body;
+
+    /* Make sure that the user is a part of the room */
+    const checkRoom = await this.databaseService.chats.count({
+      where: { room_id: room_id, sender: sender_id },
+    });
+    if (checkRoom < 1) {
+      // throw new NotFoundException('Not found!');
+      throw new RpcException({
+        code: 5,
+        message: NOT_FOUND,
+      });
+    }
+
+    const where: Prisma.ChatsWhereInput = {};
+    where.room_id = room_id;
+    // where.sender = sender_id;
+    //  if (keywords)
+    //   where.OR = [
+    //     {
+    //       name: {
+    //         contains: keywords,
+    //         mode: 'insensitive',
+    //       },
+    //     },
+    //   ];
+
+    const orderBy: Prisma.ChatsOrderByWithRelationInput = {};
+    if (order === 'latest') {
+      orderBy.createdAt = 'desc';
+    } else if (order === 'oldest') {
+      orderBy.createdAt = 'asc';
+    }
+
+    const totalData = await this.databaseService.chats.count({ where });
+
+    const totalPage = Math.ceil(totalData / limit);
+    const offset = page * limit - limit;
+
+    const result = await this.databaseService.chats.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      orderBy,
+      // omit: { password: true, createdAt: true, updatedAt: true },
+      // include: {
+      //   company: true,
+      //   user_images: true,
+      // },
+    });
+
+    return {
+      totalData,
+      totalPage,
+      page,
+      // data: finalResult,
+      data: result,
+    };
   }
 
   async updateGroupParticipants(requestBody: UpdateGroupParticipants) {

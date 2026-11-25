@@ -1,4 +1,12 @@
-import { IsArray, ArrayNotEmpty, IsString, IsNotEmpty } from 'class-validator';
+import {
+  // IsArray,
+  // ArrayNotEmpty,
+  IsOptional,
+  IsInt,
+  Min,
+  IsString,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class GetRoomByIdDto {
   //   @IsArray()
@@ -9,5 +17,24 @@ export class GetRoomByIdDto {
 
   @IsString()
   @IsNotEmpty()
-  user_id: string;
+  sender_id: string;
+
+  // @IsOptional()
+  // @IsInt()
+  // @Min(1)
+  @IsNotEmpty()
+  @IsInt()
+  page: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  limit: number;
+
+  @IsString()
+  @IsNotEmpty()
+  order: string;
+
+  @IsString()
+  @IsNotEmpty()
+  keywords: string;
 }

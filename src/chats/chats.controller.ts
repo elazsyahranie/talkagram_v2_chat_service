@@ -80,7 +80,8 @@ export class ChatsController {
 
   @MessagePattern({ cmd: 'chatsGetRoomById' })
   async getRoomById(@Body() body: GetRoomByIdDto) {
-    return { status: SUCCESS, data: { ...body } };
+    const result = await this.chatsService.getRoomById(body);
+    return { status: SUCCESS, data: result };
   }
 
   @MessagePattern({ cmd: 'chatsSelfUpdateGroupParticipant' })
