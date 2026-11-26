@@ -26,6 +26,7 @@ import { DeleteGroupDto } from './dto/delete-group.dto';
 import { AddChatDto } from './dto/add-chat.dto';
 import { GetRoomByIdDto } from './dto/get-room-by-id.dto';
 import { NOT_FOUND } from 'src/common/constants/app.constants';
+import { GetRoomByIdResult } from './dto/get-room-by-id-result.dto';
 
 @Injectable()
 export class ChatsService {
@@ -352,7 +353,7 @@ export class ChatsService {
     return { totalData, totalPage, page, data: finalResult };
   }
 
-  async getRoomById(body: GetRoomByIdDto) {
+  async getRoomById(body: GetRoomByIdDto): Promise<GetRoomByIdResult> {
     const { room_id, sender_id, order, limit, page } = body;
 
     const [checkSenderRole, findRoom] = await Promise.all([
@@ -368,6 +369,8 @@ export class ChatsService {
           name: true,
           type: true,
           description: true,
+          createdAt: true,
+          updatedAt: true,
           rooms_participants: {
             select: {
               id: true,
@@ -433,18 +436,12 @@ export class ChatsService {
       skip: offset,
       take: limit,
       orderBy,
-      // omit: { password: true, createdAt: true, updatedAt: true },
-      // include: {
-      //   company: true,
-      //   user_images: true,
-      // },
     });
 
     return {
       totalData,
       totalPage,
       page,
-      // data: finalResult,
       data: result,
       room: findRoom,
     };
