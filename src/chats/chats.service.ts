@@ -355,11 +355,47 @@ export class ChatsService {
   async getRoomById(body: GetRoomByIdDto) {
     const { room_id, sender_id, order, limit, page } = body;
 
-    /* Make sure that the user is a part of the room */
-    const checkRoom = await this.databaseService.chats.count({
-      where: { room_id: room_id, sender: sender_id },
-    });
-    if (checkRoom < 1) {
+    const [checkSenderRole, findRoom] = await Promise.all([
+      /* Find whether the sender is a part of the room */
+      this.databaseService.roomParticipants.count({
+        where: { room_id: room_id, user_id: sender_id },
+      }),
+      /* Get the data of the room  */
+      this.databaseService.rooms.findUnique({
+        where: { id: room_id },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          description: true,
+          rooms_participants: {
+            select: {
+              id: true,
+              user_id: true,
+              room_id: true,
+              role: true,
+              description: true,
+            },
+          },
+          // company: {
+          //   select: {
+          //     id: true,
+          //     code: true,
+          //     name: true,
+          //     createdAt: true,
+          //   },
+          // },
+          // user_images: {
+          //   select: {
+          //     id: true,
+          //     path: true,
+          //     type: true,
+          //   },
+          // },
+        },
+      }),
+    ]);
+    if (checkSenderRole < 1 || !findRoom) {
       // throw new NotFoundException('Not found!');
       throw new RpcException({
         code: 5,
@@ -410,6 +446,7 @@ export class ChatsService {
       page,
       // data: finalResult,
       data: result,
+      room: findRoom,
     };
   }
 
